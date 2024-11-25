@@ -20,7 +20,7 @@ finger1=seal_of_the_poisoned_pact,id=225578,bonus_id=1540/10870/10879,gem_id=213
 finger2=ring_of_earthen_craftsmanship,id=215135,bonus_id=10421/9633/8902/11144/10222/1485/8781/10520/8960/8792,gem_id=213482/213482,crafted_stats=32/49,enchant=radiant_mastery_3
 trinket1=arakara_sacbrood,id=219314,bonus_id=3131/10299/10376
 trinket2=ovinaxs_mercurial_egg,id=220305,bonus_id=1540/10299/10376
-main_hand=ulgraxs_morselmasher,id=212388,bonus_id=1540/10299/10376,enchant=rune_of_the_fallen_crusader
+main_hand=ulgraxs_morselmasher,id=212388,bonus_id=1540/10299/10376,enchant=rune_of_sanguination
 
 save=TWW1_Death_Knight_Blood.simc
 
