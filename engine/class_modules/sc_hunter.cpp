@@ -1301,21 +1301,13 @@ public:
     if ( affected_by.unnatural_causes.direct )
     {
       double amount = p()->talents.unnatural_causes_debuff->effectN( affected_by.unnatural_causes.direct ).percent();
-      //2024-10-30: Bleak Powder is always affected by the base effect from Unnatural Causes twice
-      if ( p()->bugs && ( s->action->id == 467914 || s->action->id == 472084 ) )
-      {
-        amount += p()->talents.unnatural_causes_debuff->effectN( affected_by.unnatural_causes.direct ).percent();
-      } else if ( s->target->health_percentage() < p()->talents.unnatural_causes->effectN( 3 ).base_value() )
+      if ( s->target->health_percentage() < p()->talents.unnatural_causes->effectN( 3 ).base_value() )
       {
         amount *= 1 + p()->talents.unnatural_causes->effectN( 2 ).percent();
       }
 
       am *= 1 + amount;
     }
-
-    //2024-10-30: Bleak Powder gains the damage increase from Specialized Arsenal twice (it is already parsed in hunter_action_t once.)
-    if ( p()->bugs && p()->talents.specialized_arsenal.ok() && ( s->action->id == 467914 || s->action->id == 472084 ) )
-      am *= 1 + p()->talents.specialized_arsenal->effectN( 1 ).percent();
 
     int affected_by_tip = std::max( affected_by.tip_of_the_spear.direct, affected_by.tip_of_the_spear_explosive.direct );
     if ( affected_by_tip && p()->buffs.tip_of_the_spear->check() )
@@ -4581,6 +4573,7 @@ struct vicious_hunt_t final : hunter_ranged_attack_t
   vicious_hunt_t( hunter_t* p ) : hunter_ranged_attack_t( "vicious_hunt", p, p->find_spell( 445431 ) )
   {
     background = true;
+    attack_power_mod.direct = data().effectN( 1 ).ap_coeff() * ( 1 + p->specs.survival_hunter->effectN( 19 ).percent() );
   }
 
   void execute() override

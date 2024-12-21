@@ -2,7 +2,6 @@
 // Dedmonwakeen's Raid DPS/TPS Simulator.
 // Send questions to natehieter@gmail.com
 // ==========================================================================
-
 #include "player.hpp"
 
 #include "action/action.hpp"
@@ -3112,6 +3111,7 @@ void player_t::init_spells()
   racials.awakened              = find_racial_spell( "Awakened" );
   racials.azerite_surge         = find_racial_spell( "Azerite Surge" );
   racials.titanwrought_frame    = find_racial_spell( "Titan-Wrought Frame" );
+  racials.holy_providence       = find_racial_spell( "Holy Providence" );
 
   if ( is_player() )
   {
@@ -3381,6 +3381,9 @@ void player_t::init_background_actions()
 
 void player_t::create_actions()
 {
+  if( is_player() && !is_enemy() && !is_pet() )
+    consumable::create_consumeable_actions( this );
+
   if ( action_list_str.empty() )
     no_action_list_provided = true;
 
@@ -5007,6 +5010,9 @@ double player_t::composite_player_multiplier( school_e school ) const
   if ( buffs.coldhearted && buffs.coldhearted->check() )
     m *= 1.0 + buffs.coldhearted->check_value();
 
+  if ( buffs.entropic_embrace && buffs.entropic_embrace->check() )
+    m *= 1.0 + buffs.entropic_embrace->data().effectN( 1 ).percent();
+
   return m;
 }
 
@@ -5068,8 +5074,13 @@ double player_t::composite_player_heal_multiplier( const action_state_t* ) const
 {
   double m = 1.0;
 
+  m *= 1.0 + racials.holy_providence->effectN( 2 ).percent();
+
   if ( buffs.blessing_of_spring->check() )
     m *= 1.0 + buffs.blessing_of_spring->data().effectN( 1 ).percent();
+
+  if ( buffs.entropic_embrace && buffs.entropic_embrace->check() )
+    m *= 1.0 + buffs.entropic_embrace->data().effectN( 3 ).percent();
 
   return m;
 }
@@ -5081,7 +5092,12 @@ double player_t::composite_player_th_multiplier( school_e /* school */ ) const
 
 double player_t::composite_player_absorb_multiplier( const action_state_t* ) const
 {
-  return 1.0;
+  double m = 1.0;
+
+  if ( buffs.entropic_embrace && buffs.entropic_embrace->check() )
+    m *= 1.0 + buffs.entropic_embrace->data().effectN( 4 ).percent();
+
+  return m;
 }
 
 double player_t::composite_player_target_crit_chance( player_t* t ) const
@@ -5150,9 +5166,6 @@ double player_t::non_stacking_movement_modifier() const
 
   if ( !is_enemy() && !is_pet() && type != HEALING_ENEMY )
   {
-    if ( buffs.darkflight->check() )
-      speed = std::max( buffs.darkflight->data().effectN( 1 ).percent(), speed );
-
     if ( buffs.nitro_boosts && buffs.nitro_boosts->check() )
       speed = std::max( buffs.nitro_boosts->data().effectN( 1 ).percent(), speed );
 
@@ -5198,6 +5211,9 @@ double player_t::stacking_movement_modifier() const
 
   if ( buffs.elemental_chaos_air )
     speed += buffs.elemental_chaos_air->check_value();
+
+  if ( buffs.darkflight && buffs.darkflight->check() )
+    speed += buffs.darkflight->data().effectN( 1 ).percent();
 
   return speed;
 }
@@ -6589,6 +6605,13 @@ void player_t::arise()
   }
 
   current_auto_attack_speed = cache.auto_attack_speed();
+
+  if ( consumables.flask && consumables.flask_action )
+    consumables.flask_action->execute();
+  if ( consumables.food && consumables.food_action )
+    consumables.food_action->execute();
+  if ( consumables.augmentation && consumables.augmentation_action )
+    consumables.augmentation_action->execute();
 
   // Requires index-based lookup since on-arise callbacks may
   // insert new on-arise callbacks to the vector.
@@ -8702,9 +8725,10 @@ struct lights_judgment_t : public racial_spell_t
     {
       background = may_crit = true;
       aoe                   = -1;
+      reduced_aoe_targets   = 8;
       // these are sadly hardcoded in the tooltip
-      attack_power_mod.direct = 3.0;
-      spell_power_mod.direct = 3.0;
+      attack_power_mod.direct = 4.2;
+      spell_power_mod.direct = 4.2;
     }
 
     double attack_direct_power_coefficient( const action_state_t* s ) const override
@@ -8787,8 +8811,8 @@ struct arcane_pulse_t : public racial_spell_t
     may_crit = true;
     aoe      = -1;
     // these are sadly hardcoded in the tooltip
-    attack_power_mod.direct = 0.5;
-    spell_power_mod.direct = 0.25;
+    attack_power_mod.direct = 1.5;
+    spell_power_mod.direct = 0.75;
   }
 
   double attack_direct_power_coefficient( const action_state_t* s ) const override
@@ -8845,8 +8869,12 @@ struct ancestral_call_t : public racial_spell_t
   {
     racial_spell_t::execute();
 
+    std::array<std::pair<buff_t*, double>, std::tuple_size_v<decltype( player->buffs.ancestral_call )>> stat_values;
     auto& buffs = player->buffs.ancestral_call;
-    buffs[ rng().range( buffs.size() ) ] -> trigger();
+    for ( int i = 0; i < buffs.size(); i++ )
+      stat_values[ i ] = { buffs[ i ], util::stat_value( player, debug_cast<stat_buff_t*>( buffs[ i ] )->stats.front().stat ) };
+    std::sort( stat_values.begin(), stat_values.end(), [] ( auto& a, auto& b ) { return a.second > b.second; } );
+    stat_values[ rng().range( 2 ) ].first->trigger();
   }
 };
 
@@ -8923,8 +8951,8 @@ struct bag_of_tricks_t : public racial_spell_t
     }
     else
     {
-      attack_power_mod.direct = 1.8;
-      spell_power_mod.direct  = 1.8;
+      attack_power_mod.direct = 2.52;
+      spell_power_mod.direct  = 2.52;
     }
 
     may_crit = true;
@@ -12821,6 +12849,17 @@ void player_t::create_options()
                          thewarwithin_opts.mereldars_toll_ally_trigger_chance, 0, 1 ) );
   add_option( opt_float( "thewarwithin.sureki_zealots_insignia_rppm_multiplier",
                          thewarwithin_opts.sureki_zealots_insignia_rppm_multiplier, 0, 1 ) );
+  add_option( opt_string( "thewarwithin.windsingers_passive_stat", thewarwithin_opts.windsingers_passive_stat ) );
+  add_option( opt_bool( "thewarwithin.estimate_roaring_warqueens_citrine",
+                        thewarwithin_opts.estimate_roaring_warqueens_citrine ) );
+  add_option( opt_bool( "thewarwithin.force_estimate_skippers_group_benefit",
+                        thewarwithin_opts.force_estimate_skippers_group_benefit ) );
+  add_option( opt_bool( "thewarwithin.personal_estimate_skippers_group_benefit", 
+                        thewarwithin_opts.personal_estimate_skippers_group_benefit ) );
+  add_option( opt_bool( "thewarwithin.estimate_skippers_group_benefit", 
+                        thewarwithin_opts.estimate_skippers_group_benefit ) );
+  add_option( opt_float( "thewarwithin.estimate_skippers_group_members",
+                         thewarwithin_opts.estimate_skippers_group_members, 0, 999 ) );
 }
 
 player_t* player_t::create( sim_t*, const player_description_t& )

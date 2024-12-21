@@ -22,10 +22,7 @@ temporary_enchant=main_hand:algari_mana_oil_3
 # SimulationCraft is always looking for updates and improvements to the default action lists.
 
 # Executed before combat begins. Accepts non-harmful actions only.
-actions.precombat=flask
-actions.precombat+=/food
-actions.precombat+=/augmentation
-actions.precombat+=/snapshot_stats
+actions.precombat=snapshot_stats
 actions.precombat+=/raise_dead
 actions.precombat+=/army_of_the_dead,precombat_time=2
 actions.precombat+=/variable,name=trinket_1_buffs,value=trinket.1.has_use_buff|trinket.1.is.treacherous_transmitter
@@ -214,19 +211,19 @@ hands=exhumed_centurions_gauntlets,id=212003,bonus_id=1540
 waist=girdle_of_somber_ploys,id=221133,bonus_id=1611/6935,ilevel=639,gem_id=213494
 legs=exhumed_centurions_chausses,id=212001,bonus_id=1540,enchant=stormbound_armor_kit_3
 feet=boots_of_the_black_bulwark,id=225590,bonus_id=1540,enchant=defenders_march_3
-finger1=writhing_ringworm,id=225576,bonus_id=1540/10879,gem_id=213494/213494,enchant=cursed_haste_3
-finger2=circle_of_bone,id=133299,bonus_id=9466/1514/10879,ilevel=639,gem_id=213494/213494,enchant=cursed_haste_3
+finger1=writhing_ringworm,id=225576,bonus_id=1540/10879,gem_id=213494/213494,enchant=radiant_haste_3
+finger2=cyrces_circlet,id=228411,bonus_id=12025/1511,gem_id=228638/228639/228646,enchant=radiant_haste_3
 trinket1=treacherous_transmitter,id=221023,bonus_id=1540
 trinket2=ovinaxs_mercurial_egg,id=220305,bonus_id=7981/11143/5878/10299
 main_hand=charged_claymore,id=222447,bonus_id=11144/9627/9633/8902/8793/10222/11300/8960,enchant=rune_of_the_fallen_crusader
 
 # Gear Summary
-# gear_ilvl=638.60
+# gear_ilvl=639.87
 # gear_strength=32522
-# gear_stamina=237765
+# gear_stamina=241600
 # gear_crit_rating=3094
-# gear_haste_rating=19709
-# gear_mastery_rating=16240
+# gear_haste_rating=15608
+# gear_mastery_rating=13669
 # gear_armor=56354
 # set_bonus=thewarwithin_season_1_2pc=1
 # set_bonus=thewarwithin_season_1_4pc=1

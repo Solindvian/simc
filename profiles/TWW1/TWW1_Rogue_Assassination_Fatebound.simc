@@ -22,9 +22,6 @@ temporary_enchant=main_hand:ironclaw_whetstone_3/off_hand:ironclaw_whetstone_3
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=apply_poison
-actions.precombat+=/flask
-actions.precombat+=/augmentation
-actions.precombat+=/food
 actions.precombat+=/snapshot_stats
 # Check which trinket slots have Stat Values
 actions.precombat+=/variable,name=trinket_sync_slot,value=1,if=trinket.1.has_stat.any_dps&(!trinket.2.has_stat.any_dps|trinket.1.cooldown.duration>=trinket.2.cooldown.duration)&!trinket.2.is.treacherous_transmitter|trinket.1.is.treacherous_transmitter

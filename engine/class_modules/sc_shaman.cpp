@@ -1928,8 +1928,8 @@ public:
     affected_by_elemental_unity_se_ta = ab::data().affected_by( player->buff.storm_elemental->data().effectN( 5 ) ) ||
                                         ab::data().affected_by( player->buff.lesser_storm_elemental->data().effectN( 5 ) );
 
-    affected_by_ele_mastery_da = ab::data().affected_by( player->mastery.elemental_overload->effectN( 4 ) );
-    affected_by_ele_mastery_ta = ab::data().affected_by( player->mastery.elemental_overload->effectN( 5 ) );
+    affected_by_ele_mastery_da = ab::data().affected_by( player->mastery.elemental_overload->effectN( 3 ) );
+    affected_by_ele_mastery_ta = ab::data().affected_by( player->mastery.elemental_overload->effectN( 4 ) );
 
     affected_by_lightning_elemental_da = ab::data().affected_by( player->buff.fury_of_the_storms->data().effectN( 2 ) );
     affected_by_lightning_elemental_ta = ab::data().affected_by( player->buff.fury_of_the_storms->data().effectN( 3 ) );
@@ -2037,7 +2037,7 @@ public:
 
     if ( affected_by_ele_mastery_da )
     {
-      m *= 1.0 + p()->mastery.elemental_overload->effectN( 4 ).mastery_value() * p()->cache.mastery();
+      m *= 1.0 + p()->mastery.elemental_overload->effectN( 3 ).mastery_value() * p()->cache.mastery();
     }
 
     if ( affected_by_lotfw_da && p()->buff.legacy_of_the_frost_witch->check() )
@@ -2137,7 +2137,7 @@ public:
 
     if ( affected_by_ele_mastery_ta )
     {
-      m *= 1.0 + p()->mastery.elemental_overload->effectN( 5 ).mastery_value() * p()->cache.mastery();
+      m *= 1.0 + p()->mastery.elemental_overload->effectN( 4 ).mastery_value() * p()->cache.mastery();
     }
 
     if ( affected_by_lotfw_ta && p()->buff.legacy_of_the_frost_witch->check() )
@@ -3214,14 +3214,45 @@ struct pet_action_t : public T_ACTION
 {
   using super = pet_action_t<T_PET, T_ACTION>;
 
+  bool affected_by_elemental_unity_fe_da;
+  bool affected_by_elemental_unity_fe_ta;
+  bool affected_by_elemental_unity_se_da;
+  bool affected_by_elemental_unity_se_ta;
+  bool affected_by_lightning_elemental_da;
+  bool affected_by_lightning_elemental_ta;
+
   pet_action_t( T_PET* pet, util::string_view name, const spell_data_t* spell = spell_data_t::nil(),
                 util::string_view options = {} )
-    : T_ACTION( name, pet, spell )
+    : T_ACTION( name, pet, spell ),
+      affected_by_elemental_unity_fe_da( false ),
+      affected_by_elemental_unity_fe_ta( false ),
+      affected_by_elemental_unity_se_da( false ),
+      affected_by_elemental_unity_se_ta( false ),
+      affected_by_lightning_elemental_da( false ),
+      affected_by_lightning_elemental_ta( false )
   {
     this->parse_options( options );
 
     this->special  = true;
     this->may_crit = true;
+    
+        affected_by_elemental_unity_fe_da =
+        T_ACTION::data().affected_by( o()->buff.fire_elemental->data().effectN( 4 ) ) ||
+        T_ACTION::data().affected_by( o()->buff.lesser_fire_elemental->data().effectN( 4 ) );
+    affected_by_elemental_unity_fe_ta =
+        T_ACTION::data().affected_by( o()->buff.fire_elemental->data().effectN( 5 ) ) ||
+        T_ACTION::data().affected_by( o()->buff.lesser_fire_elemental->data().effectN( 5 ) );
+    affected_by_elemental_unity_se_da =
+        T_ACTION::data().affected_by( o()->buff.storm_elemental->data().effectN( 4 ) ) ||
+        T_ACTION::data().affected_by( o()->buff.lesser_storm_elemental->data().effectN( 4 ) );
+    affected_by_elemental_unity_se_ta =
+        T_ACTION::data().affected_by( o()->buff.storm_elemental->data().effectN( 5 ) ) ||
+        T_ACTION::data().affected_by( o()->buff.lesser_storm_elemental->data().effectN( 5 ) );
+
+    affected_by_lightning_elemental_da =
+        T_ACTION::data().affected_by( o()->buff.fury_of_the_storms->data().effectN( 2 ) );
+    affected_by_lightning_elemental_ta =
+        T_ACTION::data().affected_by( o()->buff.fury_of_the_storms->data().effectN( 3 ) );
     // this -> crit_bonus_multiplier *= 1.0 + p() -> o() -> spec.elemental_fury -> effectN( 1 ).percent();
   }
 
@@ -3247,6 +3278,64 @@ struct pet_action_t : public T_ACTION
         this->stats = ( *it )->get_stats( this->name(), this );
       }
     }
+  }
+
+  double action_da_multiplier() const override
+  {
+    double m = T_ACTION::action_da_multiplier();
+
+        if ( ( affected_by_elemental_unity_fe_da && o()->talent.elemental_unity.ok() &&
+           o()->buff.fire_elemental->check() ) ||
+         ( affected_by_elemental_unity_fe_da && o()->talent.elemental_unity.ok() &&
+           o()->buff.lesser_fire_elemental->check() ) )
+    {
+      m *= 1.0 + std::max( o()->buff.fire_elemental->data().effectN( 4 ).percent(),
+                           o()->buff.lesser_fire_elemental->data().effectN( 4 ).percent() );
+    }
+
+    if ( ( affected_by_elemental_unity_se_da && o()->talent.elemental_unity.ok() &&
+           o()->buff.storm_elemental->check() ) ||
+         ( affected_by_elemental_unity_se_da && o()->talent.elemental_unity.ok() &&
+           o()->buff.lesser_storm_elemental->check() ) )
+    {
+      m *= 1.0 + std::max( o()->buff.storm_elemental->data().effectN( 4 ).percent(),
+                           o()->buff.lesser_storm_elemental->data().effectN( 4 ).percent() );
+    }
+
+    if ( affected_by_lightning_elemental_da && o()->buff.fury_of_the_storms->up() &&
+         !o()->buff.storm_elemental->check() && !o()->buff.lesser_storm_elemental->up() )
+    {
+      m *= 1.0 + o()->buff.fury_of_the_storms->data().effectN( 2 ).percent();
+    }
+
+    return m;
+  }
+
+  double action_ta_multiplier() const override
+  {
+    double m = T_ACTION::action_ta_multiplier();
+
+        if ( affected_by_elemental_unity_fe_ta && o()->talent.elemental_unity.ok() &&
+         ( o()->buff.fire_elemental->check() || o()->buff.lesser_fire_elemental->check() ) )
+    {
+      m *= 1.0 + std::max( o()->buff.fire_elemental->data().effectN( 5 ).percent(),
+                           o()->buff.lesser_fire_elemental->data().effectN( 5 ).percent() );
+    }
+
+    if ( affected_by_elemental_unity_se_ta && o()->talent.elemental_unity.ok() &&
+         ( o()->buff.storm_elemental->check() || o()->buff.lesser_storm_elemental->check() ) )
+    {
+      m *= 1.0 + std::max( o()->buff.storm_elemental->data().effectN( 5 ).percent(),
+                           o()->buff.lesser_storm_elemental->data().effectN( 5 ).percent() );
+    }
+
+    if ( affected_by_lightning_elemental_ta && o()->buff.fury_of_the_storms->up() &&
+         !o()->buff.storm_elemental->up() && !o()->buff.lesser_storm_elemental->up() )
+    {
+      m *= 1.0 + o()->buff.fury_of_the_storms->data().effectN( 3 ).percent();
+    }
+
+    return m;
   }
 
   double cost() const override
@@ -3986,7 +4075,7 @@ struct ancestor_t : public shaman_pet_t
 
   struct elemental_blast_t : public pet_spell_t<ancestor_t>
   {
-    elemental_blast_t( ancestor_t* p ) : super( p, "elemental_blast", p->find_spell( 447427 ) )
+    elemental_blast_t( ancestor_t* p ) : super( p, "elemental_blast", p->find_spell( 465717 ) )
     {
         background = true;
         spell_power_mod.direct = data().effectN( 1 ).sp_coeff();
@@ -7089,7 +7178,7 @@ struct lightning_bolt_t : public shaman_spell_t
 
     p()->trigger_thunderstrike_ward( execute_state );
 
-    if ( exec_type == spell_variant::NORMAL )
+    if ( exec_type == spell_variant::NORMAL || exec_type == spell_variant::THORIMS_INVOCATION )
     {
       p()->trigger_arc_discharge( execute_state );
     }
@@ -9324,8 +9413,8 @@ struct totem_pulse_action_t : public T
 
     affected_by_enh_mastery_da = T::data().affected_by( o()->mastery.enhanced_elements->effectN( 1 ) );
     affected_by_enh_mastery_ta = T::data().affected_by( o()->mastery.enhanced_elements->effectN( 5 ) );
-    affected_by_ele_mastery_da        = T::data().affected_by( o()->mastery.elemental_overload->effectN( 4 ) );
-    affected_by_ele_mastery_ta        = T::data().affected_by( o()->mastery.elemental_overload->effectN( 5 ) );
+    affected_by_ele_mastery_da        = T::data().affected_by( o()->mastery.elemental_overload->effectN( 3 ) );
+    affected_by_ele_mastery_ta        = T::data().affected_by( o()->mastery.elemental_overload->effectN( 4 ) );
     affected_by_amplification_core_da = T::data().affected_by( o()->buff.amplification_core->data().effectN( 1 ) );
     affected_by_amplification_core_ta = T::data().affected_by( o()->buff.amplification_core->data().effectN( 2 ) );
     affected_by_totemic_rebound_da = T::data().affected_by_all( o()->buff.totemic_rebound->data().effectN( 1 ) ) ||
@@ -9393,7 +9482,7 @@ struct totem_pulse_action_t : public T
 
     if ( affected_by_ele_mastery_da )
     {
-      m *= 1.0 + o()->mastery.elemental_overload->effectN( 4 ).mastery_value() * o()->cache.mastery();
+      m *= 1.0 + o()->mastery.elemental_overload->effectN( 3 ).mastery_value() * o()->cache.mastery();
     }
 
     if ( affected_by_totemic_rebound_da )
@@ -9456,7 +9545,7 @@ struct totem_pulse_action_t : public T
 
     if ( affected_by_ele_mastery_ta )
     {
-      m *= 1.0 + o()->mastery.elemental_overload->effectN( 5 ).mastery_value() * o()->cache.mastery();
+      m *= 1.0 + o()->mastery.elemental_overload->effectN( 4 ).mastery_value() * o()->cache.mastery();
     }
 
     if ( affected_by_lotfw_ta && o()->buff.legacy_of_the_frost_witch->check() )
@@ -13800,11 +13889,6 @@ void shaman_t::init_action_list_enhancement()
 
   // action_priority_list_t* cds              = get_action_priority_list( "cds" );
 
-  // Consumables
-  precombat->add_action( "flask" );
-  precombat->add_action( "food" );
-  precombat->add_action( "augmentation" );
-
   // Self-buffs
   precombat->add_action( "windfury_weapon" );
   precombat->add_action( "flametongue_weapon" );
@@ -14084,9 +14168,6 @@ void shaman_t::init_action_list_restoration_dps()
   action_priority_list_t* def       = get_action_priority_list( "default" );
 
   // Grabs whatever Elemental is using
-  precombat->add_action( "flask" );
-  precombat->add_action( "food" );
-  precombat->add_action( "augmentation" );
   precombat->add_action( this, "Earth Elemental" );
   precombat->add_action( "snapshot_stats", "Snapshot raid buffed stats before combat begins and pre-potting is done." );
   precombat->add_action( "potion" );
@@ -14376,6 +14457,7 @@ double shaman_t::composite_player_pet_damage_multiplier( const action_state_t* s
 
     m *= 1.0 + spec.enhancement_shaman->effectN( 3 ).percent();
 
+    m *= 1.0 + mastery.elemental_overload->effectN( 5 ).mastery_value() * cache.mastery();
     //m *= 1.0 + buff.elemental_equilibrium->value();  TODO: check what this was doing here
   }
   else
@@ -14383,6 +14465,8 @@ double shaman_t::composite_player_pet_damage_multiplier( const action_state_t* s
     m *= 1.0 + spec.elemental_shaman->effectN( 4 ).percent();
 
     m *= 1.0 + spec.enhancement_shaman->effectN( 4 ).percent();
+
+    m *= 1.0 + mastery.elemental_overload->effectN( 6 ).mastery_value() * cache.mastery();
   }
 
   return m;
@@ -15292,6 +15376,8 @@ shaman_t::pets_t::pets_t( shaman_t* s ) :
   fire_wolves.set_event_callback( { spawner::pet_event_type::ARISE, spawner::pet_event_type::DEMISE }, event_fn );
   frost_wolves.set_event_callback( { spawner::pet_event_type::ARISE, spawner::pet_event_type::DEMISE }, event_fn );
   lightning_wolves.set_event_callback( { spawner::pet_event_type::ARISE, spawner::pet_event_type::DEMISE }, event_fn );
+
+  surging_totem.set_max_pets( 1U );
 }
 
 }  // namespace

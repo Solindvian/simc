@@ -2,7 +2,7 @@ hunter="TWW1_Hunter_Survival_Pack_Leader"
 source=default
 spec=survival
 level=80
-race=orc
+race=maghar_orc
 role=attack
 position=back
 talents=C8PAAAAAAAAAAAAAAAAAAAAAAMGMzMWWmZ0ssMsNMzWDWmZsNjZmZGzYMYmxMzMjZGAAAAAAAAAAAAAAaGGzMmZGzMmhxwMDMjZWmBL
@@ -21,10 +21,7 @@ temporary_enchant=main_hand:ironclaw_whetstone_3
 # SimulationCraft is always looking for updates and improvements to the default action lists.
 
 # Executed before combat begins. Accepts non-harmful actions only.
-actions.precombat=flask
-actions.precombat+=/augmentation
-actions.precombat+=/food
-actions.precombat+=/summon_pet
+actions.precombat=summon_pet
 actions.precombat+=/use_item,name=imperfect_ascendancy_serum
 # Snapshot raid buffed stats before combat begins and pre-potting is done.
 actions.precombat+=/snapshot_stats

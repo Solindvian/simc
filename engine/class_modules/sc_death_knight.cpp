@@ -784,6 +784,7 @@ public:
     propagate_const<buff_t*> festering_scythe_stacks;
     // Tier Sets
     propagate_const<buff_t*> unholy_commander;
+    propagate_const<buff_t*> winning_streak_unholy;
 
     // Rider of the Apocalypse
     propagate_const<buff_t*> a_feast_of_souls;
@@ -1438,6 +1439,7 @@ public:
     const spell_data_t* festering_scythe_stacking_buff;
     // Tier Sets
     const spell_data_t* unholy_commander;
+    const spell_data_t* winning_streak_unholy;
 
     // Rider of the Apocalypse non-talent spells
     const spell_data_t* a_feast_of_souls_buff;
@@ -1553,6 +1555,7 @@ public:
     real_ppm_t* runic_attenuation;
     real_ppm_t* blood_beast;
     real_ppm_t* tww1_fdk_4pc;
+    real_ppm_t* tww2_unh_2pc;
   } rppm;
 
   // Pets and Guardians
@@ -1685,6 +1688,7 @@ public:
     double average_cs_travel_time      = 0.4;
     timespan_t first_ams_cast          = 20_s;
     double horsemen_ams_absorb_percent = 0.6;
+    bool disable_ghoul_spawn_stun      = false;
   } options;
 
   // Runes
@@ -2897,6 +2901,9 @@ struct base_ghoul_pet_t : public death_knight_pet_t
   void arise() override
   {
     death_knight_pet_t::arise();
+    if ( dk()->options.disable_ghoul_spawn_stun )
+      return;
+
     timespan_t duration = dk()->pet_spell.pet_stun->duration();
     if ( precombat_spawn_adjust > 0_s && precombat_spawn )
     {
@@ -3188,8 +3195,8 @@ struct army_ghoul_pet_t final : public base_ghoul_pet_t
 
     if ( name_str == "apoc_ghoul" )
     {
-      // Currently has a 1.12x modifier, also not in spell data
-      owner_coeff.ap_from_ap *= 0.9996;
+      // Currently has a 1.29948x modifier as of 12-18-2024, also not in spell data
+      owner_coeff.ap_from_ap *= 1.29948;
     }
   }
 
@@ -4790,6 +4797,9 @@ struct death_knight_action_t : public parse_action_effects_t<Base>
     {
       p()->active_spells.blood_draw->execute();
     }
+
+    if ( p()->is_ptr() && p()->sets->has_set_bonus( DEATH_KNIGHT_UNHOLY, TWW2, B2 ) && p()->rppm.tww2_unh_2pc->trigger() )
+      p()->buffs.winning_streak_unholy->trigger();
   }
 
   void impact( action_state_t* s ) override
@@ -5721,10 +5731,7 @@ struct ams_parent_buff_t : public death_knight_absorb_buff_t
 
     if ( horsemen )
     {
-      if ( player->is_ptr() )
-        max_absorb *= p()->talent.rider.horsemens_aid->effectN( 1 ).percent();
-      else
-        max_absorb *= 0.8;
+      max_absorb *= p()->talent.rider.horsemens_aid->effectN( 1 ).percent();
     }
 
     return max_absorb;
@@ -7818,8 +7825,11 @@ struct dark_transformation_damage_t final : public death_knight_spell_t
 
 struct dark_transformation_t final : public death_knight_spell_t
 {
+  int winning_streak_stacks;
+
   dark_transformation_t( death_knight_t* p, std::string_view options_str )
-    : death_knight_spell_t( "dark_transformation", p, p->talent.unholy.dark_transformation )
+    : death_knight_spell_t( "dark_transformation", p, p->talent.unholy.dark_transformation ),
+      winning_streak_stacks( 0 )
   {
     harmful = false;
     target  = p;
@@ -7839,6 +7849,10 @@ struct dark_transformation_t final : public death_knight_spell_t
     if ( p->talent.unholy.unholy_pact.ok() )
     {
       add_child( get_action<unholy_pact_damage_t>( "unholy_pact_damage", p ) );
+    }
+    if( p->sets->has_set_bonus( DEATH_KNIGHT_UNHOLY, TWW2, B2 ) )
+    {
+      winning_streak_stacks = p->spell.winning_streak_unholy->max_stacks();
     }
   }
 
@@ -7868,6 +7882,11 @@ struct dark_transformation_t final : public death_knight_spell_t
     if ( p()->talent.unholy.unholy_blight.ok() )
     {
       p()->active_spells.unholy_blight->execute();
+    }
+
+    if( p()->is_ptr() && p()->sets->has_set_bonus( DEATH_KNIGHT_UNHOLY, TWW2, B4 ) )
+    {
+      p()->buffs.winning_streak_unholy->trigger( winning_streak_stacks );
     }
   }
 
@@ -8276,7 +8295,7 @@ struct death_coil_t final : public death_knight_spell_t
   {
     parse_options( options_str );
 
-    execute_action = get_action<death_coil_damage_t>( "death_coil_damage", p );
+    execute_action        = get_action<death_coil_damage_t>( "death_coil_damage", p );
     execute_action->stats = stats;
     stats->action_list.push_back( execute_action );
 
@@ -8286,6 +8305,16 @@ struct death_coil_t final : public death_knight_spell_t
     if ( p->talent.unholy.doomed_bidding.ok() )
     {
       p->pets.doomed_bidding_magus_coil.set_creation_event_callback( pets::parent_pet_action_fn( this ) );
+    }
+  }
+
+  void execute() override
+  {
+    death_knight_spell_t::execute();
+    if ( p()->is_ptr() && p()->sets->has_set_bonus( DEATH_KNIGHT_UNHOLY, TWW2, B2 ) && !p()->buffs.dark_transformation->check() &&
+         rng().roll( p()->spell.winning_streak_unholy->proc_chance() ) )
+    {
+      p()->buffs.winning_streak_unholy->expire();
     }
   }
 };
@@ -8670,6 +8699,12 @@ struct epidemic_t final : public death_knight_spell_t
     if ( p()->talent.sanlayn.vampiric_strike.ok() && !p()->buffs.gift_of_the_sanlayn->check() )
     {
       p()->trigger_vampiric_strike_proc( target );
+    }
+
+    if ( p()->is_ptr() && p()->sets->has_set_bonus( DEATH_KNIGHT_UNHOLY, TWW2, B2 ) &&
+         !p()->buffs.dark_transformation->check() && rng().roll( p()->spell.winning_streak_unholy->proc_chance() ) )
+    {
+      p()->buffs.winning_streak_unholy->expire();
     }
   }
 
@@ -11180,16 +11215,16 @@ double death_knight_t::resource_loss( resource_e resource_type, double amount, g
       summon_rider( spell.summon_whitemane_2->duration(), true );
     }
 
-    if ( talent.rider.nazgrims_conquest.ok() && buffs.apocalyptic_conquest->check() )
-    {
-      debug_cast<buffs::apocalyptic_conquest_buff_t*>( buffs.apocalyptic_conquest )->nazgrims_conquest +=
-          as<int>( amount );
-      invalidate_cache( CACHE_STRENGTH );
-    }
-
     // Effects that require the player to actually spend runes
     if ( actual_amount > 0 )
     {
+      if ( talent.rider.nazgrims_conquest.ok() && buffs.apocalyptic_conquest->check() &&
+           action->data().id() != spec.remorseless_winter->id() )
+      {
+        debug_cast<buffs::apocalyptic_conquest_buff_t*>( buffs.apocalyptic_conquest )->nazgrims_conquest +=
+            as<int>( amount );
+        invalidate_cache( CACHE_STRENGTH );
+      }
     }
   }
 
@@ -11288,6 +11323,7 @@ void death_knight_t::create_options()
   add_option(
       opt_timespan( "deathknight.first_ams_cast", options.first_ams_cast, timespan_t::zero(), timespan_t::max() ) );
   add_option( opt_float( "deathknight.horsemen_ams_absorb_percent", options.horsemen_ams_absorb_percent, 0.0, 1.0 ) );
+  add_option( opt_bool( "deathknight.disable_ghoul_spawn_stun", options.disable_ghoul_spawn_stun ) );
 }
 
 void death_knight_t::copy_from( player_t* source )
@@ -12861,6 +12897,7 @@ void death_knight_t::init_rng()
   rppm.runic_attenuation = get_rppm( "runic_attenuation", talent.runic_attenuation );
   rppm.blood_beast       = get_rppm( "blood_beast", talent.sanlayn.the_blood_is_life );
   rppm.tww1_fdk_4pc      = get_rppm( "tww1_fdk_4pc", sets->set( DEATH_KNIGHT_FROST, TWW1, B4 ) );
+  rppm.tww2_unh_2pc      = get_rppm( "tww2_unh_2pc", sets->set( DEATH_KNIGHT_UNHOLY, TWW2, B2 ) );
 }
 
 // death_knight_t::init_base ================================================
@@ -13354,6 +13391,7 @@ void death_knight_t::spell_lookups()
   spell.festering_scythe_stacking_buff = conditional_spell_lookup( talent.unholy.festering_scythe.ok(), 459238 );
   // Set Bonuses
   spell.unholy_commander = conditional_spell_lookup( sets->has_set_bonus( DEATH_KNIGHT_UNHOLY, TWW1, B4 ), 456698 );
+  spell.winning_streak_unholy = conditional_spell_lookup( is_ptr() && sets->has_set_bonus( DEATH_KNIGHT_UNHOLY, TWW2, B2 ), 1216813 );
 
   // Rider of the Apocalypse Spells
   spell.a_feast_of_souls_buff = conditional_spell_lookup( talent.rider.a_feast_of_souls.ok(), 440861 );
@@ -14167,9 +14205,8 @@ void death_knight_t::create_buffs()
                           ->set_default_value( talent.unholy.festermight->effectN( 1 ).percent() )
                           ->set_stack_behavior( buff_stack_behavior::ASYNCHRONOUS );
 
-  buffs.commander_of_the_dead =
-      make_fallback( talent.unholy.commander_of_the_dead.ok(), this, "commander_of_the_dead",
-                     spell.commander_of_the_dead );
+  buffs.commander_of_the_dead = make_fallback( talent.unholy.commander_of_the_dead.ok(), this, "commander_of_the_dead",
+                                               spell.commander_of_the_dead );
 
   buffs.festering_scythe =
       make_fallback( talent.unholy.festering_scythe.ok(), this, "festering_scythe", spell.festering_scythe_buff );
@@ -14184,6 +14221,13 @@ void death_knight_t::create_buffs()
 
   buffs.unholy_commander = make_fallback( sets->has_set_bonus( DEATH_KNIGHT_UNHOLY, TWW1, B4 ), this,
                                           "unholy_commander", spell.unholy_commander );
+
+  if ( is_ptr() )
+  {
+    buffs.winning_streak_unholy = make_fallback( sets->has_set_bonus( DEATH_KNIGHT_UNHOLY, TWW2, B2 ), this,
+                                                 "winning_streak", spell.winning_streak_unholy )
+                                      ->set_chance( 1.01 );
+  }
 }
 
 // death_knight_t::init_gains ===============================================
@@ -14861,6 +14905,12 @@ void death_knight_action_t<Base>::apply_action_effects()
   parse_effects( p()->buffs.sudden_doom, p()->talent.unholy.harbinger_of_doom );
   parse_effects( p()->buffs.plaguebringer, p()->talent.unholy.plaguebringer );
   parse_effects( p()->mastery.dreadblade );
+  parse_effects( p()->buffs.winning_streak_unholy, [ & ]( double v ) {
+    if ( p()->buffs.dark_transformation->check() )
+      v *= 1.0 + p()->sets->set( DEATH_KNIGHT_UNHOLY, TWW2, B4 )->effectN( 1 ).percent();
+
+    return v;
+  } );
 
   // Rider of the Apocalypse
   parse_effects( p()->buffs.mograines_might );
@@ -15229,37 +15279,50 @@ struct death_knight_module_t : public module_t
     unique_gear::register_special_effect( 326864, runeforge::spellwarding );
     unique_gear::register_special_effect( 326982, runeforge::unending_thirst );
   }
-
   /*
   void register_hotfixes() const override
   {
-    hotfix::register_effect( "Death Knight", "2024-09-13", "Vampiric Strike Proc chance increased to 25%", 1123520,
+    hotfix::register_effect( "Death Knight", "2024-12-13", "Rotten Touch Debuff incrased to 60%", 1026981,
                              hotfix::HOTFIX_FLAG_LIVE )
         .field( "base_value" )
         .operation( hotfix::HOTFIX_SET )
-        .modifier( 25 )
-        .verification_value( 10 );
+        .modifier( 60 )
+        .verification_value( 50 );
 
-    hotfix::register_effect( "Death Knight", "2024-09-13", "Frenzied Bloodthirst increased to 5%", 1123820,
-                             hotfix::HOTFIX_FLAG_LIVE )
-        .field( "base_value" )
-        .operation( hotfix::HOTFIX_SET )
-        .modifier( 5 )
-        .verification_value( 4 );
-
-    hotfix::register_effect( "Death Knight", "2024-09-13", "Visceral Strength buffed to 8%", 1123972,
-                             hotfix::HOTFIX_FLAG_LIVE )
-        .field( "base_value" )
-        .operation( hotfix::HOTFIX_SET )
-        .modifier( 8 )
-        .verification_value( 6 );
-
-    hotfix::register_effect( "Death Knight", "2024-09-13", "Vampiric Strike byuffed by 20%", 1124444,
+    hotfix::register_effect( "Death Knight", "2024-12-13", "Death Coil buffed by 8%", 39872,
                              hotfix::HOTFIX_FLAG_LIVE )
         .field( "ap_coefficient" )
         .operation( hotfix::HOTFIX_SET )
-        .modifier( 0.5814504 )
-        .verification_value( 0.484542 );
+        .modifier( 0.64368 )
+        .verification_value( 0.596 );
+
+    hotfix::register_effect( "Death Knight", "2024-12-13", "Scourge Strike Physical buffed by 10%", 48019,
+                             hotfix::HOTFIX_FLAG_LIVE )
+      .field( "ap_coefficient" )
+      .operation( hotfix::HOTFIX_SET )
+      .modifier( 0.641784 )
+      .verification_value( 0.58344 );
+
+    hotfix::register_effect( "Death Knight", "2024-12-13", "Scourge Strike Shadow buffed by 10%", 214692,
+                             hotfix::HOTFIX_FLAG_LIVE )
+      .field( "ap_coefficient" )
+      .operation( hotfix::HOTFIX_SET )
+      .modifier( 0.35354 )
+      .verification_value( 0.3214 );
+
+    hotfix::register_effect( "Death Knight", "2024-12-13", "Clawing Shadows buffed by 10%", 324719,
+                             hotfix::HOTFIX_FLAG_LIVE )
+      .field( "ap_coefficient" )
+      .operation( hotfix::HOTFIX_SET )
+      .modifier( 1.177 )
+      .verification_value( 1.07 );
+
+    hotfix::register_effect( "Death Knight", "2024-12-13", "Vampiric Strike buffed by 10%", 1123513,
+                             hotfix::HOTFIX_FLAG_LIVE )
+      .field( "ap_coefficient" )
+      .operation( hotfix::HOTFIX_SET )
+      .modifier( 1.144 )
+      .verification_value( 1.04 );
   }*/
 
   void init( player_t* ) const override

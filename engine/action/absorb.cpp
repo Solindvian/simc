@@ -27,23 +27,14 @@ absorb_t::absorb_t( util::string_view name, player_t* p, const spell_data_t* s )
   stats->type = STATS_ABSORB;
 }
 
-absorb_buff_t* absorb_t::create_buff(const action_state_t* s)
+absorb_buff_t* absorb_t::create_buff( const action_state_t* s )
 {
-  buff_t* b = buff_t::find(s->target, name_str);
-  if (b)
-    return debug_cast<absorb_buff_t*>(b);
+  buff_t* b = buff_t::find( s->target, name_str, player );
+  if ( b )
+    return debug_cast<absorb_buff_t*>( b );
 
-  std::string stats_obj_name = name_str;
-  if (s->target != player)
-    stats_obj_name += "_" + player->name_str;
-  stats_t* stats_obj = player->get_stats(stats_obj_name, this);
-  if (stats != stats_obj)
-  {
-    // Add absorb target stats as a child to the main stats object for reporting
-    stats->add_child(stats_obj);
-  }
   auto buff = make_buff<absorb_buff_t>( actor_pair_t( s->target, player ), name_str, &data() );
-  buff->set_absorb_source(stats_obj);
+  buff->set_absorb_source( stats );
 
   return buff;
 }

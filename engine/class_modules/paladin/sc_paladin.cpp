@@ -394,7 +394,9 @@ struct divine_guidance_damage_t : public paladin_spell_t
   {
     proc = may_crit         = true;
     may_miss                = false;
-    attack_power_mod.direct = 1;
+    attack_power_mod.direct = ( p->talents.lightsmith.divine_guidance->effectN( 1 ).base_value() +
+                                p->spec.protection_paladin->effectN( 25 ).base_value() ) /
+                              10.0;
     aoe                     = -1;
     split_aoe_damage        = true;
   }
@@ -413,7 +415,9 @@ struct divine_guidance_heal_t : public paladin_heal_t
   {
     proc = may_crit         = true;
     may_miss                = false;
-    attack_power_mod.direct = 1;
+    attack_power_mod.direct = ( p->talents.lightsmith.divine_guidance->effectN( 1 ).base_value() +
+                                p->spec.protection_paladin->effectN( 25 ).base_value() ) /
+                              10.0;
     aoe                     = 1;
   }
 
@@ -4148,8 +4152,7 @@ void paladin_t::init_special_effects()
 
     auto const divine_inspiration_driver = new special_effect_t( this );
     divine_inspiration_driver->name_str  = "divine_inspiration_driver";
-    // Since proc chance is hidden, this is just a guess. Average proc rate seems to match, though
-    divine_inspiration_driver->ppm_        = -1.2;
+    divine_inspiration_driver->ppm_        = -.55;
     divine_inspiration_driver->rppm_scale_ = RPPM_HASTE;
     divine_inspiration_driver->type        = SPECIAL_EFFECT_EQUIP;
     divine_inspiration_driver->proc_flags_ =

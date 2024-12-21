@@ -335,7 +335,7 @@ struct simplified_player_t : public player_t
   // Options
   struct options_t
   {
-    int item_level = 630;
+    int item_level = 639;
     std::string variant = "default";
   } option;
 
@@ -372,6 +372,8 @@ struct simplified_player_t : public player_t
     // Using a background repeating action as a replacement for a foreground action. Change Ready Type to trigger so we
     // can wake up the pet when it needs to re-execute this action.
     ready_type = READY_TRIGGER;
+
+    _spec = SPEC_PET;
   }
 
   buff_t* make_damage_buff( std::string_view name, double value, timespan_t duration, timespan_t cooldown, timespan_t delay_from_start = 0_s )
@@ -475,8 +477,8 @@ struct simplified_player_t : public player_t
     {
       background = repeating = true;
 
-      allow_class_ability_procs = true;
-      may_crit                  = true;
+      allow_class_ability_procs = not_a_proc = true;
+      may_crit                               = true;
 
       set_action_stats( settings, p );
     }
@@ -584,7 +586,9 @@ struct simplified_player_t : public player_t
         { SLOT_LEGS,      fmt::format( ",id=193759,ilevel={},enchant=sunset_spellthread_3", item_level ) },
         { SLOT_FEET,      fmt::format( ",id=207139,ilevel={}", item_level ) },
         { SLOT_FINGER_1,  fmt::format( ",id=207159,ilevel={},gem_id=213494/213494,enchant=radiant_mastery_3", item_level ) },
-        { SLOT_FINGER_2,  fmt::format( ",id=204398,ilevel={},gem_id=213494/213494,enchant=radiant_mastery_3", item_level ) },
+        { SLOT_FINGER_2,
+          fmt::format( ",id=228411,gem_id={}/{}/{},bonus_id=12025/1511,enchant=radiant_mastery_3",
+                                      228638, 228639, 228646 ) }, 
         { SLOT_TRINKET_1, fmt::format( ",id=153816,ilevel={}", item_level ) },
         { SLOT_TRINKET_2, fmt::format( ",id=153819,ilevel={}", item_level ) },
         { SLOT_MAIN_HAND, fmt::format( ",id=202565,ilevel={}", item_level ) },
@@ -645,7 +649,89 @@ struct simplified_player_t : public player_t
       started_waiting = sim->current_time();
     }
 
-    player_t::acquire_target( event, context );
+    // TODO: This skips certain very custom targets (such as Soul Effigy), is it a problem (since those
+    // usually are handled in action target cache regeneration)?
+    if ( sim->debug )
+    {
+      sim->out_debug.printf( "%s retargeting event=%s context=%s current_target=%s", name(),
+                             util::retarget_event_string( event ), context ? context->name() : "NONE",
+                             target ? target->name() : "NONE" );
+    }
+
+    player_t* candidate_target    = nullptr;
+    player_t* first_invuln_target = nullptr;
+
+    // TODO: Fancier system
+    for ( auto enemy : sim->target_non_sleeping_list )
+    {
+      if ( enemy->debuffs.invulnerable != nullptr && enemy->debuffs.invulnerable->check() )
+      {
+        if ( first_invuln_target == nullptr )
+        {
+          first_invuln_target = enemy;
+        }
+        continue;
+      }
+
+      if ( !enemy->is_enemy() || enemy->is_sleeping() )
+        continue;
+
+      if ( !candidate_target || enemy->max_health() > candidate_target->max_health() )
+        candidate_target = enemy;
+
+      if ( sim->fixed_time )
+        break;
+    }
+
+    // Invulnerable targets are currently not in the target_non_sleeping_list, so fall back to
+    // checking if the first target has the invulnerability buff up, and use that as the fallback
+    auto first_target = sim->target_list.data().front();
+    if ( !first_invuln_target && first_target->debuffs.invulnerable->check() )
+    {
+      first_invuln_target = first_target;
+    }
+
+    // Only perform target acquisition if the actor's current target would change (to the candidate
+    // target).
+    if ( candidate_target )
+    {
+      if ( sim->debug )
+      {
+        sim->out_debug.printf( "%s acquiring (potentially new) target, current=%s candidate=%s", name(),
+                               target ? target->name() : "NONE", candidate_target ? candidate_target->name() : "NONE" );
+      }
+
+      target = candidate_target;
+      range::for_each( action_list, [ event, context, candidate_target ]( action_t* action ) {
+        action->acquire_target( event, context, candidate_target );
+      } );
+    }
+    // If we really cannot find any sensible target, fall back to the first invulnerable target
+    else if ( !candidate_target && first_invuln_target )
+    {
+      if ( sim->debug )
+      {
+        sim->out_debug.printf( "%s acquiring (potentially new) target, current=%s candidate=%s [invulnerable fallback]", name(),
+                               target ? target->name() : "NONE",
+                               first_invuln_target ? first_invuln_target->name() : "NONE" );
+      }
+
+      target = first_invuln_target;
+      range::for_each( action_list, [ event, context, first_invuln_target ]( action_t* action ) {
+        action->acquire_target( event, context, first_invuln_target );
+      } );
+    }
+
+    if ( candidate_target || first_invuln_target )
+    {
+      // Finally, re-acquire targeting for all dynamic targeting actions. This needs to be done
+      // separately, as their targeting is not strictly bound to player_t::target (i.e., "the players
+      // target")
+      range::for_each(
+          dynamic_target_action_list, [ event, context, candidate_target, first_invuln_target ]( action_t* action ) {
+            action->acquire_target( event, context, candidate_target ? candidate_target : first_invuln_target );
+          } );
+    }
 
     if ( !ability->execute_event )
       trigger_ready();
@@ -1261,7 +1347,8 @@ struct evoker_t : public player_t
   void bounce_naszuro( player_t*, timespan_t );
 
   // Augmentation Helpers
-  void spawn_mote_of_possibility( player_t* = nullptr, timespan_t = timespan_t::zero() );
+  void spawn_mote_of_possibility( player_t* = nullptr, mote_buffs_e = mote_buffs_e::MAX,
+                                  timespan_t = timespan_t::zero() );
   void extend_ebon( timespan_t );
   double get_molten_embers_multiplier( player_t*, bool = false) const;
   void apply_bombardments( player_t* );
@@ -5252,7 +5339,7 @@ struct eruption_t : public essence_spell_t
                     p()->talent.ricocheting_pyroclast->effectN( 1 ).percent();
     }
 
-    if ( p()->buff.mass_eruption_stacks->check() )
+    if ( p()->buff.mass_eruption_stacks->check() && !is_overlord )
     {
       da *= 1 + ( mass_eruption_max_targets - mass_eruption_targets() ) * mass_eruption_mult;
     }
@@ -5360,8 +5447,9 @@ struct upheaval_t : public empowered_charge_spell_t
     action_t* chrono_flames;
     int max_afterimage_targets;
     bool is_rumbling_earth;
+    bool is_tierset;
 
-    upheaval_damage_t( evoker_t* p, std::string_view name, bool is_rumbling_earth )
+    upheaval_damage_t( evoker_t* p, std::string_view name, bool is_rumbling_earth, bool is_tierset )
       : base_t( name, p, p->find_spell( 396288 ) ),
         reverberations( nullptr ),
         reverb_mul( p->talent.chronowarden.reverberations->effectN( 2 ).percent() ),
@@ -5369,35 +5457,56 @@ struct upheaval_t : public empowered_charge_spell_t
         rumbling_earth( nullptr ),
         chrono_flames( nullptr ),
         max_afterimage_targets( as<int>( p->talent.chronowarden.afterimage->effectN( 1 ).base_value() ) ),
-        is_rumbling_earth( is_rumbling_earth )
+        is_rumbling_earth( is_rumbling_earth ),
+        is_tierset( is_tierset )
     {
       aoe = -1;
 
       if ( p->talent.chronowarden.reverberations.enabled() )
       {
-        reverberations = p->get_secondary_action<reverberations_t>( "upheaval_dot" );
+        reverberations = p->get_secondary_action<reverberations_t>( fmt::format( "{}_dot", name ) );
       }
 
       if ( is_rumbling_earth )
       {
-        sands = nullptr;
+        sands           = nullptr;
         threads_of_fate = nullptr;
         base_dd_multiplier *= p->talent.rumbling_earth->effectN( 1 ).percent();
         extend_ebon = 0_s;
       }
       else if ( p->talent.rumbling_earth.enabled() )
       {
-        rumbling_earth =
-            p->get_secondary_action<upheaval_damage_t>( "upheaval_rumbling_earth", "upheaval_rumbling_earth", true );
+        rumbling_earth = p->get_secondary_action<upheaval_damage_t>( fmt::format( "{}_rumbling_earth", name ),
+                                                                     fmt::format( "{}_rumbling_earth", name ), true, is_tierset );
       }
 
       if ( p->talent.chronowarden.afterimage.enabled() && !is_rumbling_earth )
       {
-        chrono_flames = p->get_secondary_action<living_flame_damage_t>( "afterimage_upheaval", "afterimage_upheaval", true );
+        chrono_flames = p->get_secondary_action<living_flame_damage_t>( fmt::format( "afterimage_{}", name ),
+                                                                        fmt::format( "afterimage_{}", name ), true );
+      }
+
+      if ( is_tierset && !is_rumbling_earth )
+      {
+        base_dd_multiplier *= p->sets->set( EVOKER_AUGMENTATION, TWW2, B2 )->effectN( 1 ).percent();
+
+        if ( rumbling_earth )
+        {
+          add_child( rumbling_earth );
+        }
+        if ( chrono_flames )
+        {
+          add_child( chrono_flames );
+        }
+        if ( reverberations )
+        {
+          add_child( reverberations );
+        }
+
       }
     }
 
-    upheaval_damage_t( evoker_t* p ) : upheaval_damage_t( p, "upheaval_damage", false )
+    upheaval_damage_t( evoker_t* p ) : upheaval_damage_t( p, "upheaval_damage", false, false )
     {
     }
 
@@ -5448,7 +5557,6 @@ struct upheaval_t : public empowered_charge_spell_t
             rumbling_earth->schedule_execute( emp_state );
           } );
         }
-
       }
 
       empowered_release_spell_t::execute();
@@ -5467,18 +5575,18 @@ struct upheaval_t : public empowered_charge_spell_t
 
     if ( p->talent.chronowarden.reverberations.enabled() )
     {
-      add_child( p->get_secondary_action<reverberations_t>( "upheaval_dot" ) );
+      add_child( p->get_secondary_action<reverberations_t>( "upheaval_damage_dot" ) );
     }
 
     if ( p->talent.rumbling_earth.enabled() )
     {
       add_child(
-          p->get_secondary_action<upheaval_damage_t>( "upheaval_rumbling_earth", "upheaval_rumbling_earth", true ) );
+          p->get_secondary_action<upheaval_damage_t>( "upheaval_damage_rumbling_earth", "upheaval_damage_rumbling_earth", true, false ) );
     }
 
     if ( p->talent.chronowarden.afterimage.enabled() )
     {
-      add_child( p->get_secondary_action<living_flame_damage_t>( "afterimage_upheaval", "afterimage_upheaval", true ) );
+      add_child( p->get_secondary_action<living_flame_damage_t>( "afterimage_upheaval_damage", "afterimage_upheaval_damage", true ) );
     }
   }
 };
@@ -8070,6 +8178,51 @@ void evoker_t::init_spells()
 void evoker_t::init_special_effects()
 {
   player_t::init_special_effects();
+
+  if ( is_ptr() && sets->has_set_bonus( EVOKER_AUGMENTATION, TWW2, B2 ) )
+  {
+    struct augmentation_tww2_2pc : public dbc_proc_callback_t
+    {
+      spells::upheaval_t::upheaval_damage_t* upheaval_set;
+
+      augmentation_tww2_2pc( evoker_t* p, const special_effect_t& e )
+        : dbc_proc_callback_t( p, e ), upheaval_set( nullptr )
+      {
+        allow_pet_procs = false;
+        initialize();
+        activate();
+
+        upheaval_set = p->get_secondary_action<spells::upheaval_t::upheaval_damage_t>(
+            "upheaval_tww2_2pc", "upheaval_tww2_2pc", false, true );
+        upheaval_set->dual = false;
+      }
+
+      void execute( action_t*, action_state_t* s ) override
+      {
+        if ( s->target->is_sleeping() )
+          return;
+
+        double da = s->result_amount;
+        if ( da > 0 )
+        {
+          auto emp_state       = upheaval_set->get_state();
+          emp_state->target    = s->target;
+          upheaval_set->target = s->target;
+          upheaval_set->snapshot_state( emp_state, upheaval_set->amount_type( emp_state ) );
+          upheaval_set->cast_state( emp_state )->empower = EMPOWER_1;
+          upheaval_set->schedule_execute( emp_state );
+        }
+      }
+    };
+
+    auto set_spell       = sets->set( EVOKER_AUGMENTATION, TWW2, B2 );
+    auto set_effect      = new special_effect_t( this );
+    set_effect->name_str = set_spell->name_cstr();
+    set_effect->type     = SPECIAL_EFFECT_EQUIP;
+    set_effect->spell_id = set_spell->id();
+
+    auto cb = new augmentation_tww2_2pc( this, *set_effect );
+  }
 }
 
 void evoker_t::init_assessors()
@@ -8929,43 +9082,83 @@ void evoker_t::bounce_naszuro( player_t* s, timespan_t remains = timespan_t::min
   get_target_data( p )->buffs.unbound_surge->trigger( remains );
 }
 
-void evoker_t::spawn_mote_of_possibility( player_t* prospective_player, timespan_t delay )
+void evoker_t::spawn_mote_of_possibility( player_t* prospective_player, mote_buffs_e mote_buff, timespan_t delay )
 {
   player_t* target = prospective_player;
 
   if ( target && target->is_sleeping() )
     target = nullptr;
 
-  if ( !target && allies_with_my_ebon.size() > 0 )
+  if ( mote_buff == mote_buffs_e::MAX )
+    mote_buff = mote_buffs_e( rng().range<unsigned>( mote_buffs_e::MAX ) );
+
+  if ( target )
   {
-    target = allies_with_my_ebon[ rng().range<size_t>( allies_with_my_ebon.size() ) ];
+    auto td = get_target_data( target );
+    switch ( mote_buff )
+    {
+      case mote_buffs_e::INFERNOS_BLESSING:
+        td->buffs.infernos_blessing->trigger();
+        return;
+      case mote_buffs_e::SHIFTING_SANDS:
+        td->buffs.shifting_sands->current_value = cache.mastery_value();
+        td->buffs.shifting_sands->trigger();
+        return;
+      default:
+        return;
+    }
   }
-
-  if ( !target )
+  else
   {
-    // Use loose Exponential Backoff to delay the event until Ebon Might becomes active.
-    timespan_t new_delay = rng().range( 0_s, 1_s ) + delay * 1.1;
-    make_event( sim, new_delay, [ this, new_delay ] { spawn_mote_of_possibility( nullptr, new_delay ); } );
-    return;
+    switch ( mote_buff )
+    {
+      case mote_buffs_e::INFERNOS_BLESSING:
+        get_target_data( this )->buffs.infernos_blessing->trigger();
+        return;
+      case mote_buffs_e::SYMBIOTIC_BLOOM:
+        return;
+      case mote_buffs_e::SHIFTING_SANDS:
+        if ( !target && allies_with_my_ebon.size() > 0 )
+        {
+          std::vector<player_t*> helper = allies_with_my_ebon.data();
+          rng().shuffle( helper.begin(), helper.end() );
+          auto it = range::partition( helper, [ this ]( player_t* t ) { 
+              return !get_target_data( t )->buffs.shifting_sands->check();
+          } );
+          
+          if ( it != helper.begin() )
+          {
+            std::partition( helper.begin(), it, [ this ]( player_t* t ) {
+              return t->role != ROLE_HYBRID && t->role != ROLE_HEAL && t->role != ROLE_TANK &&
+                     t->specialization() != EVOKER_AUGMENTATION;
+            } );
+          }
+          else
+          {
+            spawn_mote_of_possibility( this, mote_buff );
+            return;
+          }
+
+          auto td                                 = get_target_data( helper.front() );
+          td->buffs.shifting_sands->current_value = cache.mastery_value();
+          td->buffs.shifting_sands->trigger();
+        }
+        else
+        {
+          // Use loose Exponential Backoff to delay the event until Ebon Might becomes active.
+          timespan_t new_delay = rng().range( 0_s, 1_s ) + delay * 1.1;
+          make_event( sim, new_delay,
+                      [ this, mote_buff, new_delay ] { spawn_mote_of_possibility( nullptr, mote_buff, new_delay ); } );
+          return;
+        }
+        return;
+      default:
+        return;
+    }
   }
+  
 
-  auto td = get_target_data( target );
 
-  mote_buffs_e mote_buff = mote_buffs_e( rng().range<unsigned>( mote_buffs_e::MAX ) );
-
-  switch ( mote_buff )
-  {
-    case mote_buffs_e::INFERNOS_BLESSING:
-      td->buffs.infernos_blessing->trigger();
-      break;
-    case mote_buffs_e::SHIFTING_SANDS:
-      td->buffs.shifting_sands->current_value = cache.mastery_value();
-      td->buffs.shifting_sands->trigger();
-      break;
-    case mote_buffs_e::SYMBIOTIC_BLOOM:
-    default:
-      break;
-  }
 }
 
 void evoker_t::extend_ebon( timespan_t extend )

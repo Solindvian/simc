@@ -1,6 +1,6 @@
 priest="TWW1_Priest_Shadow_Voidweaver"
 level=80
-race=orc
+race=maghar_orc
 spec=shadow
 role=spell
 position=ranged_back
@@ -17,6 +17,7 @@ waist=acrid_ascendants_sash,id=225585,ilevel=639,gem_id=213473
 legs=living_lusters_trousers,id=212082,ilevel=639,enchant=sunset_spellthread_3
 feet=assimilated_eggshell_slippers,id=225582,ilevel=639
 finger1=writhing_ringworm,id=225576,ilevel=639,enchant=radiant_mastery_3,gem_id=213494/213494
+finger1=,id=228411,gem_id=228638/228639/228646,bonus_id=12025/1511,enchant=radiant_mastery_3
 finger2=seal_of_the_poisoned_pact,id=225578,ilevel=639,enchant=radiant_mastery_3,gem_id=213494/213494
 trinket1=spymasters_web,id=220202,ilevel=639
 trinket2=arakara_sacbrood,id=219314,ilevel=639
@@ -27,7 +28,7 @@ save=TWW1_Priest_Shadow.simc
 
 priest="TWW1_Priest_Shadow_Archon"
 level=80
-race=orc
+race=maghar_orc
 spec=shadow
 role=spell
 position=ranged_back
@@ -44,6 +45,7 @@ waist=acrid_ascendants_sash,id=225585,ilevel=639,gem_id=213473
 legs=living_lusters_trousers,id=212082,ilevel=639,enchant=sunset_spellthread_3
 feet=assimilated_eggshell_slippers,id=225582,ilevel=639
 finger1=writhing_ringworm,id=225576,ilevel=639,enchant=radiant_mastery_3,gem_id=213494/213494
+finger1=cyrces_circlet,id=228411,gem_id=228638/228639/228646,bonus_id=12025/1511,enchant=radiant_mastery_3
 finger2=seal_of_the_poisoned_pact,id=225578,ilevel=639,enchant=radiant_mastery_3,gem_id=213494/213494
 trinket1=spymasters_web,id=220202,ilevel=639
 trinket2=arakara_sacbrood,id=219314,ilevel=639

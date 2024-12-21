@@ -1,4 +1,4 @@
-SimulationCraft 1100-02 for World of Warcraft 11.0.5.57534 Live
+SimulationCraft 1100-02 for World of Warcraft 11.0.7.58187 Live
 Name             : Incapacitating Roar (id=99) [Spell Family (7)] 
 Talent Entry     : Generic [tree=class, row=9, col=2, max_rank=1, req_points=20, select_idx=100]
 Class            : Druid
@@ -233,7 +233,7 @@ Family Flags     : 85, 98
 Attributes       : Is Ability (4), Do Not Sheath (18), Initiates Combat (Enables Auto-Attack) (41), Discount Power On Miss (59), Aura Never Bounces (148), Spell Haste Affects Periodic (173), Taps immediately (215), Periodic Can Crit (265), Aura Points On Client (268), Allow Class Ability Procs (416), Nameplate Personal Buffs/Debuffs (423), Periodic Refresh Extends Duration (436)
 Effects          :
 #1 (id=390)      : Apply Aura (6) | Periodic Damage (3): physical every 2 seconds
-                   Base Value: 0 | Scaled Value: 0 | AP Coefficient: 0.2929 | PvP Coefficient: 1.25 | Mechanic: Bleed | Target: Enemy (6)
+                   Base Value: 0 | Scaled Value: 0 | AP Coefficient: 0.3222 | PvP Coefficient: 1.136 | Mechanic: Bleed | Target: Enemy (6)
 #2 (id=117625)   : Apply Aura (6) | Dummy (4)
                    Base Value: 2 | Scaled Value: 2 | Target: Enemy (6)
 #3 (id=117626)   : Dummy (3)
@@ -322,7 +322,7 @@ Family Flags     : 12, 98
 Attributes       : Is Ability (4), Do Not Sheath (18), Require All Targets (58), Discount Power On Miss (59), Initiate Combat Post-Cast (Enables Auto-Attack) (84), Aura Never Bounces (148), Periodic Can Crit (265), Aura Points On Client (268), No Level Up Toast (281), Allow Class Ability Procs (416)
 Effects          :
 #1 (id=559)      : School Damage (2): physical
-                   Base Value: 0 | Scaled Value: 0 (delta=0.05) | AP Coefficient: 0.294 | PvP Coefficient: 1.25 | Target: Enemy (6)
+                   Base Value: 0 | Scaled Value: 0 (delta=0.05) | AP Coefficient: 0.3234 | PvP Coefficient: 1.136 | Target: Enemy (6)
 #2 (id=560)      : Energize Power (30)
                    Base Value: 1 | Scaled Value: 1 | Resource: combo_points | Target: Self (1)
 #3 (id=561)      : Trigger Spell (64): Rake
@@ -1051,7 +1051,7 @@ Family Flags     : 33, 118
 Attributes       : Not Shapeshifted (16), Allow While Not Shapeshifted (caster form) (83), Allow Class Ability Procs (416)
 Effects          :
 #1 (id=10065)    : Direct Heal (10)
-                   Base Value: 0 | Scaled Value: 0 (delta=0.05) | SP Coefficient: 6.1824 | Target: Friendly (21)
+                   Base Value: 0 | Scaled Value: 0 (delta=0.05) | SP Coefficient: 7.728 | Target: Friendly (21)
 Description      : Consumes a Regrowth, Wild Growth, or Rejuvenation effect to instantly heal an ally for $s1.$?a383192[
 
 Swiftmend heals the target for $383193o1 over $383193d.][]
@@ -2175,11 +2175,11 @@ Race             : Worgen (0x200000)
 School           : Physical
 Spell Type       : None
 Duration         : 10 seconds
-Cooldown         : 120 seconds
+Cooldown         : 90 seconds
 Labels           : 219
 Attributes       : Allow While Stealthed (37), Reset cooldown upon ending an encounter (333)
 Effects          :
-#1 (id=71777)    : Apply Aura (6) | Increase Speed% (31)
+#1 (id=71777)    : Apply Aura (6) | Increase Movement Speed% (Stacking) (129)
                    Base Value: 40 | Scaled Value: 40 | Target: Self (1)
 #2 (id=104308)   : Apply Aura (6) | Unknown(358)
                    Base Value: 0 | Scaled Value: 0 | Target: Self (1)
@@ -4341,13 +4341,15 @@ Labels           : 16: Class Spells
 Attributes       : Is Ability (4), Passive (6), Do Not Display (Spellbook, Aura Icon, Combat Log) (7), Do Not Log (8), Allow Class Ability Procs (416)
 Effects          :
 #1 (id=179695)   : Apply Aura (6) | Add Percent Modifier (108): Spell Direct Amount (0)
-                   Base Value: 18 | Scaled Value: 18 | PvP Coefficient: 0 | Target: Self (1)
+                   Base Value: 18 | Scaled Value: 18 | PvP Coefficient: 0.278 | Target: Self (1)
                    Affected Spells: Rejuvenation (774), Regrowth (8936), Swiftmend (18562), Lifebloom (33763), Lifebloom (33778), Wild Growth (48438), Nourish (50464), Efflorescence (81269), Cenarion Ward (102352), Rejuvenation (Germination) (155777), Tranquility (157982), Lifebloom (188550), Cultivation (200389), Reactive Resin (203406), Spring Blossoms (207386), Grove Tending (279793), Early Harvest (287255), Adaptive Swarm (325748), Renewing Bloom (364686), Ephemeral Profusion (367330), Grove Tending (383193), Adaptive Swarm (391891), Embrace of the Dream (392147), Invigorate (392160), Verdancy (392329), Nourish (422090), Swiftmend (422094), Wild Growth (422382), Nourish (423618), Minor Cenarion Ward (429222), Dream Bloom (434141), Symbiotic Blooms (439530), Bursting Growth (440121), Reactive Resin (468152)
                    Family Flags: 118
+Hotfixed         : PvP Coefficient (0 -> 0.278)
 #2 (id=191150)   : Apply Aura (6) | Add Percent Modifier (108): Spell Periodic Amount (22)
-                   Base Value: 18 | Scaled Value: 18 | PvP Coefficient: 0 | Misc Value: 22 | Target: Self (1)
+                   Base Value: 18 | Scaled Value: 18 | PvP Coefficient: 0.278 | Misc Value: 22 | Target: Self (1)
                    Affected Spells: Rejuvenation (774), Regrowth (8936), Swiftmend (18562), Lifebloom (33763), Lifebloom (33778), Wild Growth (48438), Nourish (50464), Efflorescence (81269), Cenarion Ward (102352), Rejuvenation (Germination) (155777), Tranquility (157982), Lifebloom (188550), Cultivation (200389), Reactive Resin (203406), Spring Blossoms (207386), Grove Tending (279793), Early Harvest (287255), Adaptive Swarm (325748), Renewing Bloom (364686), Ephemeral Profusion (367330), Grove Tending (383193), Adaptive Swarm (391891), Embrace of the Dream (392147), Invigorate (392160), Verdancy (392329), Nourish (422090), Swiftmend (422094), Wild Growth (422382), Nourish (423618), Minor Cenarion Ward (429222), Dream Bloom (434141), Symbiotic Blooms (439530), Bursting Growth (440121), Reactive Resin (468152)
                    Family Flags: 118
+Hotfixed         : PvP Coefficient (0 -> 0.278)
 #3 (id=191151)   : Apply Aura (6) | Modify Mana Regen% (379)
                    Base Value: 25 | Scaled Value: 25 | Target: Self (1)
 #4 (id=191152)   : Apply Aura (6) | Add Percent Modifier (108): Spell Direct Amount (0)
@@ -4420,7 +4422,7 @@ Effects          :
                    Base Value: -30000 | Scaled Value: -30000 | Misc Value: 1182 (Category) | Target: Self (1)
                    Affected Spells (Category): PvP Trinket (42292), Honorable Medallion (195710), Gladiator's Medallion (336126), Gladiator's Fastidious Resolve (363117)
 #24 (id=1113290) : Apply Aura (6) | Add Percent Modifier (108): Spell Periodic Amount (22)
-                   Base Value: 50 | Scaled Value: 50 | PvP Coefficient: 0 | Misc Value: 22 | Target: Self (1)
+                   Base Value: 36 | Scaled Value: 36 | PvP Coefficient: 0 | Misc Value: 22 | Target: Self (1)
                    Affected Spells: Rip (1079)
                    Family Flags: 85
 #25 (id=1113620) : Apply Aura (6) | Add Percent Modifier (108): Spell Direct Amount (0)
@@ -4432,11 +4434,11 @@ Effects          :
                    Affected Spells: Shred (5221)
                    Family Flags: 15
 #27 (id=1120676) : Apply Aura (6) | Add Percent Modifier (108): Spell Direct Amount (0)
-                   Base Value: 5 | Scaled Value: 5 | Target: Self (1)
+                   Base Value: -5 | Scaled Value: -5 | PvP Coefficient: 0 | Target: Self (1)
                    Affected Spells: Rake (1822), Rake (155722)
                    Family Flags: 12
 #28 (id=1120677) : Apply Aura (6) | Add Percent Modifier (108): Spell Periodic Amount (22)
-                   Base Value: 22 | Scaled Value: 22 | Misc Value: 22 | Target: Self (1)
+                   Base Value: 11 | Scaled Value: 11 | PvP Coefficient: 2 | Misc Value: 22 | Target: Self (1)
                    Affected Spells: Rake (1822), Rake (155722)
                    Family Flags: 12
 #29 (id=1178737) : Apply Aura (6) | Add Percent Modifier (108): Spell Direct Amount (0)
@@ -4773,7 +4775,7 @@ Family Flags     : 12, 98
 Attributes       : Is Ability (4), Do Not Sheath (18), No Active Defense (21), Initiates Combat (Enables Auto-Attack) (41), Discount Power On Miss (59), Always Hit (114), Do Not Display Range (126), Aura Never Bounces (148), Spell Haste Affects Periodic (173), Periodic Can Crit (265), Aura Points On Client (268), No Level Up Toast (281), Allow Class Ability Procs (416), Nameplate Personal Buffs/Debuffs (423), Periodic Refresh Extends Duration (436)
 Effects          :
 #1 (id=216427)   : Apply Aura (6) | Periodic Damage (3): physical every 3 seconds
-                   Base Value: 0 | Scaled Value: 0 | AP Coefficient: 0.297 | PvP Coefficient: 1.1 | Target: Enemy (6)
+                   Base Value: 0 | Scaled Value: 0 | AP Coefficient: 0.3267 | Target: Enemy (6)
 #2 (id=1095738)  : Apply Aura (6) | Modify Damage Taken% from Caster's Spells (271)
                    Base Value: 0 | Scaled Value: 0 | Target: Enemy (6)
                    Affected Spells: Rip (1079), Rake (1822), Shred (5221), Ferocious Bite (22568), Maim (22570), Swipe (106785), Thrash (106830), Moonfire (155625), Rake (155722), Brutal Slash (202028), Feral Frenzy (274838), Primal Wrath (285381), Adaptive Swarm (325733), Adaptive Swarm (325748), Sickle of the Lion (363830), Rampant Ferocity (391710), Adaptive Swarm (391889), Adaptive Swarm (391891), Thrash (405233), Bloodseeker Vines (439531), Bursting Growth (440122), Ravage (441591), Dreadful Wound (441812)
@@ -7935,11 +7937,13 @@ Labels           : 1224
 Attributes       : Missile Speed is Delay (in sec) (292), Reset cooldown upon ending an encounter (333)
 Effects          :
 #1 (id=477694)   : Trigger Missiles (32)
-                   Base Value: 0 | Scaled Value: 0 | Trigger Spell: 256893 | Radius: 0 - 5 yards | Target: Enemy (6)
-Description      : Call down a strike of Holy energy, dealing $<damage> Holy damage to enemies within $A1 yards after 3 sec.
-Variables        : $damage=${$cond($gt($SP,$AP),$SP*3,$AP*3)*$pctD*(1+$@versadmg)}
+                   Base Value: 3 | Scaled Value: 3 | Trigger Spell: 256893 | Radius: 0 - 10 yards | Target: Enemy (6)
+#2 (id=1192214)  : Dummy (3)
+                   Base Value: 8 | Scaled Value: 8
+Description      : Call down a strike of Holy energy, dealing $<damage> Holy damage to enemies within $A1 yards after $s1 sec. Damage reduced beyond $s2 targets.
+Variables        : $damage=${$cond($gt($SP,$AP),$SP*4.2,$AP*4.2)*$pctD*(1+$@versadmg)}
 
-Name             : Holy Resistance (desc=Racial Passive) (id=255651) [Passive] 
+Name             : Holy Providence (desc=Racial Passive) (id=255651) [Passive] 
 Class            : Warrior, Paladin, Hunter, Rogue, Priest, Death Knight, Shaman, Mage, Warlock, Monk, Druid, Demon Hunter, Evoker
 Race             : Lightforged Draenei (0x20000000)
 School           : Holy
@@ -7949,7 +7953,10 @@ Effects          :
 #1 (id=477698)   : Apply Aura (6) | Modify Damage Taken% (87)
                    Base Value: -1 | Scaled Value: -1 | Misc Value: 0x2 | Target: Self (1)
                    Affected School(s): Holy
-Description      : Reduces Holy damage taken by ${$s1/-1}%.
+#2 (id=1192226)  : Apply Aura (6) | Modify Healing% Done (136)
+                   Base Value: 1 | Scaled Value: 1 | Misc Value: 0x7f | Target: Self (1)
+                   Affected School(s): All
+Description      : Reduces Holy damage taken by ${$s1/-1}% and increases healing done by $s2%.
 
 Name             : Light's Reckoning (desc=Racial Passive) (id=255652) [Passive] 
 Class            : Warrior, Paladin, Hunter, Rogue, Priest, Death Knight, Shaman, Mage, Warlock, Monk, Druid, Demon Hunter, Evoker
@@ -7984,9 +7991,9 @@ Cooldown         : 150 seconds
 Triggered By     : Light's Judgment (255647)
 Effects          :
 #1 (id=479673)   : School Damage (2): holy
-                   Base Value: 0 | Scaled Value: 0 | PvP Coefficient: 0.5 | Radius: 0 - 5 yards | Target: At Enemy (53) -> At Enemy in Area (16)
+                   Base Value: 0 | Scaled Value: 0 | PvP Coefficient: 0.5 | Radius: 0 - 10 yards | Target: At Enemy (53) -> At Enemy in Area (16)
 Description      : Call down a strike of Holy energy, dealing $<damage> Holy damage to enemies within $A1 yards.
-Variables        : $damage=${$cond($gt($SP,$AP),$SP*3,$AP*3)*$pctD*(1+$@versadmg)}
+Variables        : $damage=${$cond($gt($SP,$AP),$SP*4.2,$AP*4.2)*$pctD*(1+$@versadmg)}
 
 Name             : Light's Reckoning (desc=Racial Passive) (id=256896) 
 Class            : Warrior, Paladin, Hunter, Rogue, Priest, Death Knight, Shaman, Mage, Warlock, Monk, Druid, Demon Hunter, Evoker
@@ -13217,7 +13224,7 @@ Family Flags     : 98
 Attributes       : Is Ability (4), Ignore Line of Sight (66), Do Not Display Range (126), Aura Points On Client (268), Allow Class Ability Procs (416)
 Effects          :
 #1 (id=1029376)  : School Damage (2): physical
-                   Base Value: 0 | Scaled Value: 0 | AP Coefficient: 0.333 | Target: Enemy (6)
+                   Base Value: 0 | Scaled Value: 0 | AP Coefficient: 0.363 | PvP Coefficient: 0.91 | Target: Enemy (6)
 Description      : $@spelldesc391709
 
 Name             : Sabertooth (id=391722) [Spell Family (7)] 
@@ -17431,9 +17438,10 @@ Labels           : 16: Class Spells
 Attributes       : Passive (6), Do Not Display (Spellbook, Aura Icon, Combat Log) (7), Do Not Display Range (126), Do Not Display Cast Time (441)
 Effects          :
 #1 (id=1113818)  : Apply Aura (6) | Add Percent Modifier (108): Spell Direct Amount (0)
-                   Base Value: 100 | Scaled Value: 100 | PvP Coefficient: 0.625 | Target: Self (1)
+                   Base Value: 100 | Scaled Value: 100 | PvP Coefficient: 0.8 | Target: Self (1)
                    Affected Spells: Starfire (194153), Starfire (197628)
                    Family Flags: 2
+Hotfixed         : PvP Coefficient (0.625 -> 0.8)
 #2 (id=1118640)  : Apply Aura (6) | Add Percent Modifier (108): Spell Direct Amount (0)
                    Base Value: 12 | Scaled Value: 12 | Target: Self (1)
                    Affected Spells: Thrash (77758), Thrash (106830), Thrash (192090), Thrash (405233)
@@ -17952,7 +17960,7 @@ Family Flags     : 118
 Attributes       : Ignore Line of Sight (66), Include In Advanced Combat Log (72), DoT Stacking Rule (103), Can Proc From Procs (122), Not In Spellbook (143), Aura Never Bounces (148), Vehicle Immunity Category (218), Periodic Can Crit (265), Aura Points On Client (268), Heal Prediction (280), Do Not Consume Aura Stack On Proc (428)
 Effects          :
 #1 (id=1132873)  : Apply Aura (6) | Periodic Heal (8): every 2 seconds
-                   Base Value: 0 | Scaled Value: 0 | SP Coefficient: 0.4 | Target: Friendly (21)
+                   Base Value: 0 | Scaled Value: 0 | SP Coefficient: 0.4 | PvP Coefficient: 1.25 | Target: Friendly (21)
 #2 (id=1133530)  : Apply Aura (6) | Modify Healing Taken% from Caster (504)
                    Base Value: 0 | Scaled Value: 0 | Target: Friendly (21)
 Description      : $@spelldesc439528
@@ -18715,7 +18723,6 @@ Description      : $@spelldesc441691
 Tooltip          : When you have $s1 stacks, the next time you transform into Bear Form, your next Mangle deals $441698s1% increased damage or your next $?s202028[Brutal Slash][Swipe] deals $441698s2% increased damage. Either generates ${$442562s1/10} extra Rage.
 
 Name             : Ursine Potential (id=441698) [Spell Family (7)] 
-Hotfixed         : Attributes
 Class            : Druid
 School           : Physical
 Spell Type       : None
@@ -18763,7 +18770,6 @@ Description      : $@spelldesc441691
 Tooltip          : When you have $s1 stacks, the next time you transform into Cat Form, gain $441704s1 combo points and your next Ferocious Bite or Rip deals $441702s1% increased damage for its full duration.
 
 Name             : Feline Potential (id=441702) [Spell Family (7)] 
-Hotfixed         : Attributes
 Class            : Druid
 School           : Physical
 Spell Type       : None
@@ -19039,11 +19045,11 @@ Proc Flags       : Yellow Melee
 Attributes       : Passive (6), Not In Spellbook (143), Do Not Log on Learn (355)
 Effects          :
 #1 (id=1136584)  : Apply Aura (6) | Add Flat Modifier (107): Spell Critical Chance (7)
-                   Base Value: 10 | Scaled Value: 10 | Misc Value: 7 | Target: Self (1)
+                   Base Value: 15 | Scaled Value: 15 | Misc Value: 7 | Target: Self (1)
                    Affected Spells: Shred (5221), Mangle (33917), Swipe (106785), Brutal Slash (202028), Swipe (213771)
                    Family Flags: 15, 38, 52, 74, 99
 #2 (id=1136586)  : Apply Aura (6) | Add Percent Modifier (108): Spell Critical Bonus Multiplier (15)
-                   Base Value: 10 | Scaled Value: 10 | Misc Value: 15 | Target: Self (1)
+                   Base Value: 15 | Scaled Value: 15 | Misc Value: 15 | Target: Self (1)
                    Affected Spells: Shred (5221), Mangle (33917), Swipe (106785), Brutal Slash (202028), Swipe (213771)
                    Family Flags: 15, 38, 52, 74, 99
 #3 (id=1164931)  : Apply Aura (6) | Proc Trigger Spell (42): Strike for the Heart

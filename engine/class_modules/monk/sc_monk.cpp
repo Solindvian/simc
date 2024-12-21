@@ -159,8 +159,6 @@ void monk_action_t<Base>::apply_buff_effects()
   // TWW S1 Set Effects
   apply_affecting_aura( p()->sets->set( MONK_BREWMASTER, TWW1, B2 ) );
 
-  // TWW S2 Set Effects
-
   // TWW S3 Set Effects
 
   // TWW S4 Set Effects
@@ -236,6 +234,8 @@ void monk_action_t<Base>::apply_buff_effects()
   parse_effects( p()->buff.flow_of_battle_damage );
 
   // TWW S2 Set Effects
+  parse_effects( p()->tier.tww2.winning_streak );
+  parse_effects( p()->tier.tww2.luck_of_the_draw );
 
   // TWW S3 Set Effects
 
@@ -591,6 +591,12 @@ void monk_action_t<Base>::execute()
   base_t::execute();
 
   trigger_storm_earth_and_fire( this );
+
+  // TWW S2 WW 2pc
+  if ( p()->tier.tww2.winning_streak->up() &&
+       base_t::data().affected_by( p()->tier.tww2.ww_2pc_winning_streak->effectN( 1 ) ) )
+    if ( p()->rng().roll( p()->tier.tww2.ww_2pc->effectN( 1 ).percent() ) )
+      p()->tier.tww2.winning_streak->expire();
 
   // TWW S1 Windwalker 2PC
   if ( p()->buff.tiger_strikes->up() )
@@ -1744,6 +1750,8 @@ struct blackout_kick_t : overwhelming_force_t<charred_passions_t<monk_melee_atta
     apply_affecting_aura( p->talent.brewmaster.shadowboxing_treads );
     apply_affecting_aura( p->talent.brewmaster.elusive_footwork );
 
+    parse_effects( p->tier.tww2.opportunistic_strike, DECREMENT_BUFF );
+
     if ( player->sets->set( MONK_BREWMASTER, TWW1, B4 )->ok() )
       keg_smash_cooldown = player->get_cooldown( "keg_smash" );
 
@@ -2171,6 +2179,11 @@ struct fists_of_fury_tick_t : public monk_melee_attack_t
     trigger_gcd                = timespan_t::zero();
 
     parse_effects( p->buff.momentum_boost_damage );
+    if ( const auto &effect = p->tier.tww2.ww_4pc_cashout->effectN( 1 ); effect.ok() && p->tier.tww2.ww_4pc->ok() )
+      add_parse_entry( da_multiplier_effects )
+          .set_buff( p->tier.tww2.cashout )
+          .set_value( effect.percent() )
+          .set_eff( &effect );
   }
 
   double composite_target_multiplier( player_t *target ) const override
@@ -2229,8 +2242,7 @@ struct fists_of_fury_t : public monk_melee_attack_t
 
     ability_lag = p->world_lag;
 
-    tick_action        = new fists_of_fury_tick_t( p, "fists_of_fury_tick" );
-    tick_action->stats = stats;
+    tick_action = new fists_of_fury_tick_t( p, "fists_of_fury_tick" );
   }
 
   bool usable_moving() const override
@@ -2240,6 +2252,9 @@ struct fists_of_fury_t : public monk_melee_attack_t
 
   void execute() override
   {
+    if ( p()->tier.tww2.ww_4pc->ok() )
+      p()->tier.tww2.winning_streak->trigger();
+
     monk_melee_attack_t::execute();
 
     if ( p()->buff.fury_of_xuen_stacks->up() && rng().roll( p()->buff.fury_of_xuen_stacks->stack_value() ) )
@@ -2261,10 +2276,15 @@ struct fists_of_fury_t : public monk_melee_attack_t
     // Delay the expiration of the buffs until after the tick action happens.
     // Otherwise things trigger before the tick action happens; which is not intended.
     make_event( p()->sim, timespan_t::from_millis( 1 ), [ & ] {
+      p()->tier.tww2.cashout->expire();
       p()->buff.transfer_the_power->expire();
       p()->buff.pressure_point->trigger();
       p()->buff.momentum_boost_damage->expire();
       p()->buff.momentum_boost_speed->trigger();
+
+      // TODO: Make sure this doesn't happen if FoF is cancelled.
+      if ( p()->tier.tww2.ww_4pc->ok() )
+        p()->tier.tww2.winning_streak->trigger();
     } );
   }
 };
@@ -4003,11 +4023,11 @@ struct flurry_of_xuen_t : public monk_spell_t
   {
     double da = monk_spell_t::composite_da_multiplier( s );
 
-      if ( p()->buff.storm_earth_and_fire->check() )
-      {
-        // Tested 23/10/2024. Flurry of Xuen deals additional damage during SEF.
-        da *= ( 1 + p()->talent.windwalker.storm_earth_and_fire->effectN( 1 ).percent() ) * 3;
-      }
+    if ( p()->buff.storm_earth_and_fire->check() )
+    {
+      // Tested 23/10/2024. Flurry of Xuen deals additional damage during SEF.
+      da *= ( 1 + p()->talent.windwalker.storm_earth_and_fire->effectN( 1 ).percent() ) * 3;
+    }
     return da;
   }
 };
@@ -5944,7 +5964,7 @@ void aspect_of_harmony_t::construct_actions( monk_t *player )
   damage = new spender_t::tick_t<monk_spell_t>( player, "aspect_of_harmony_damage",
                                                 player->talent.master_of_harmony.aspect_of_harmony_damage );
   heal   = new spender_t::tick_t<monk_heal_t>( player, "aspect_of_harmony_heal",
-                                             player->talent.master_of_harmony.aspect_of_harmony_heal );
+                                               player->talent.master_of_harmony.aspect_of_harmony_heal );
 
   if ( player->specialization() == MONK_BREWMASTER )
     purified_spirit = new spender_t::purified_spirit_t<monk_spell_t>(
@@ -7262,6 +7282,15 @@ void monk_t::init_spells()
     tier.tww1.ww_4pc_dmg                  = find_spell( 454508 );
     tier.tww1.brm_4pc_damage_buff         = find_spell( 457257 );
     tier.tww1.brm_4pc_free_keg_smash_buff = find_spell( 457271 );
+
+    tier.tww2.ww_2pc                       = sets->set( MONK_WINDWALKER, TWW2, B2 );
+    tier.tww2.ww_2pc_winning_streak        = tier.tww2.ww_2pc->effectN( 1 ).trigger();
+    tier.tww2.ww_4pc                       = sets->set( MONK_WINDWALKER, TWW2, B4 );
+    tier.tww2.ww_4pc_cashout               = find_spell( 1216498 );
+    tier.tww2.brm_2pc                      = sets->set( MONK_BREWMASTER, TWW2, B2 );
+    tier.tww2.brm_2pc_luck_of_the_draw     = tier.tww2.brm_2pc->effectN( 1 ).trigger();
+    tier.tww2.brm_4pc                      = sets->set( MONK_BREWMASTER, TWW2, B4 );
+    tier.tww2.brm_4pc_opportunistic_strike = find_spell( 1217999 );
   }
 
   // Passives =========================================
@@ -8104,6 +8133,37 @@ void monk_t::create_buffs()
                                                         "wisdom_of_the_wall_mastery", find_spell( 452685 ) )
                                         ->set_trigger_spell( talent.shado_pan.wisdom_of_the_wall )
                                         ->set_default_value_from_effect( 1 );
+
+  // TWW S2 Tier Buffs
+  // WW
+  tier.tww2.winning_streak =
+      make_buff_fallback( tier.tww2.ww_2pc->ok(), this, "winning_streak", tier.tww2.ww_2pc_winning_streak )
+          ->set_stack_change_callback( [ & ]( buff_t *, int old, int new_ ) {
+            if ( old && !new_ )
+              tier.tww2.cashout->trigger( old );
+          } )
+          ->set_expire_at_max_stack( tier.tww2.ww_4pc->ok() );
+  tier.tww2.cashout = make_buff_fallback( tier.tww2.ww_4pc->ok(), this, "cashout", tier.tww2.ww_4pc_cashout );
+  // BrM
+  tier.tww2.luck_of_the_draw =
+      make_buff_fallback( tier.tww2.brm_2pc->ok(), this, "luck_of_the_draw", tier.tww2.brm_2pc_luck_of_the_draw )
+          ->set_stack_change_callback( [ & ]( buff_t *, int old, int new_ ) {
+            if ( new_ )
+              tier.tww2.opportunistic_strike->trigger();
+            if ( !old )
+              buff.fortifying_brew->trigger( tier.tww2.brm_2pc->effectN( 1 ).time_value() );
+          } )
+          ->set_refresh_duration_callback( [ & ]( const buff_t *b, timespan_t duration ) {
+            tier.tww2.opportunistic_strike->trigger();
+            return std::max( b->remains(), duration );
+          } );
+  tier.tww2.opportunistic_strike = make_buff_fallback( tier.tww2.brm_4pc->ok(), this, "opportunistic_strike",
+                                                       tier.tww2.brm_4pc_opportunistic_strike )
+                                       ->set_stack_change_callback( [ & ]( buff_t *b, int, int new_ ) {
+                                         if ( new_ < b->max_stack() )
+                                           cooldown.blackout_kick->adjust( -b->data().effectN( 1 ).time_value() );
+                                       } );
+
   // ------------------------------
   // Movement
   // ------------------------------
@@ -8534,6 +8594,12 @@ void monk_t::init_special_effects()
           buff.inner_compass_crane_stance->trigger();
         } );
   }
+
+  // TWW2 Tier
+  if ( tier.tww2.ww_2pc->ok() )
+    create_proc_callback( tier.tww2.ww_2pc, []( monk_t *, action_state_t * ) { return true; } );
+  if ( tier.tww2.brm_2pc->ok() )
+    create_proc_callback( tier.tww2.brm_2pc, []( monk_t *, action_state_t * ) { return true; }, PF2_ALL_HIT );
 
   // ======================================
 

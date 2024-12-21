@@ -207,9 +207,6 @@ void brewmaster( player_t *p )
 
   action_priority_list_t *item_actions = p->get_action_priority_list( "item_actions" );
   action_priority_list_t *race_actions = p->get_action_priority_list( "race_actions" );
-  precombat->add_action( "flask" );
-  precombat->add_action( "food" );
-  precombat->add_action( "augmentation" );
   precombat->add_action( "snapshot_stats" );
   precombat->add_action( "potion" );
   precombat->add_action( "chi_burst" );
@@ -267,15 +264,6 @@ void brewmaster( player_t *p )
 void mistweaver( player_t *p )
 {
   action_priority_list_t *pre = p->get_action_priority_list( "precombat" );
-
-  // Flask
-  pre->add_action( "flask" );
-
-  // Food
-  pre->add_action( "food" );
-
-  // Rune
-  pre->add_action( "augmentation" );
 
   // Snapshot stats
   pre->add_action( "snapshot_stats" );
@@ -434,13 +422,6 @@ void windwalker( player_t *p )
   //============================================================================
 
   action_priority_list_t *pre = p->get_action_priority_list( "precombat" );
-
-  // Flask
-  pre->add_action( "flask" );
-  // Food
-  pre->add_action( "food" );
-  // Rune
-  pre->add_action( "augmentation" );
 
   // Snapshot stats
   pre->add_action( "snapshot_stats", "Snapshot raid buffed stats before combat begins and pre-potting is done." );
@@ -618,6 +599,7 @@ void windwalker( player_t *p )
   default_aoe->add_action(
       "rising_sun_kick,target_if=min:debuff.mark_of_the_crane.remains,if=buff.pressure_point.up&cooldown.fists_of_fury."
       "remains>2" );
+  default_aoe->add_action("blackout_kick,target_if=min:debuff.mark_of_the_crane.remains,if=talent.shadowboxing_treads&talent.courageous_impulse&combo_strike&buff.bok_proc.stack=2" );
   default_aoe->add_action(
       "spinning_crane_kick,target_if=max:target.time_to_die,if=combo_strike&buff.dance_of_chiji.up&spinning_crane_kick."
       "max" );
@@ -642,6 +624,7 @@ void windwalker( player_t *p )
   default_aoe->add_action(
       "blackout_kick,target_if=min:debuff.mark_of_the_crane.remains,if=combo_strike&!cooldown.fists_of_fury.remains&"
       "chi<3" );
+  default_aoe->add_action( "blackout_kick,target_if=min:debuff.mark_of_the_crane.remains,if=talent.shadowboxing_treads&talent.courageous_impulse&combo_strike&buff.bok_proc.up" );
   default_aoe->add_action( "spinning_crane_kick,if=combo_strike&(chi>3|energy>55)" );
   default_aoe->add_action(
       "blackout_kick,target_if=min:debuff.mark_of_the_crane.remains,if=combo_strike&(buff.ordered_elements.up|buff.bok_"
@@ -724,14 +707,14 @@ void windwalker( player_t *p )
       "rising_sun_kick,target_if=max:target.time_to_die,if=chi>4&(active_enemies<3|talent.glory_of_the_dawn)|chi>2&"
       "energy>50&(active_enemies<3|talent.glory_of_the_dawn)|cooldown.fists_of_fury.remains>2&(active_enemies<3|talent."
       "glory_of_the_dawn)" );
+   default_cleave->add_action( "blackout_kick,target_if=min:debuff.mark_of_the_crane.remains,if=talent.shadowboxing_treads&talent.courageous_impulse&combo_strike&buff.bok_proc.stack=2" );
   default_cleave->add_action(
       "blackout_kick,target_if=min:debuff.mark_of_the_crane.remains,if=buff.teachings_of_the_monastery.stack=4&!talent."
       "knowledge_of_the_broken_temple&talent.shadowboxing_treads&active_enemies<3" );
   default_cleave->add_action(
       "spinning_crane_kick,target_if=max:target.time_to_die,if=combo_strike&buff.dance_of_chiji.up" );
-  default_cleave->add_action(
-      "spinning_crane_kick,target_if=max:target.time_to_die,if=combo_strike&buff.ordered_elements.up&talent.crane_"
-      "vortex&active_enemies>2" );
+  default_cleave->add_action( "blackout_kick,target_if=min:debuff.mark_of_the_crane.remains,if=talent.shadowboxing_treads&talent.courageous_impulse&combo_strike&buff.bok_proc.up" );
+ 
   default_cleave->add_action(
       "tiger_palm,target_if=min:debuff.mark_of_the_crane.remains,if=combo_strike&energy.time_to_max<=gcd.max*3&talent."
       "flurry_strikes&active_enemies<5" );
@@ -837,6 +820,7 @@ void windwalker( player_t *p )
       "blackout_kick,target_if=min:debuff.mark_of_the_crane.remains,if=buff.teachings_of_the_monastery.stack=4&!talent."
       "knowledge_of_the_broken_temple&cooldown.rising_sun_kick.remains>1&cooldown.fists_of_fury.remains>2" );
   default_st->add_action( "spinning_crane_kick,if=buff.dance_of_chiji.stack=2&combo_strike" );
+  default_st->add_action( "blackout_kick,target_if=min:debuff.mark_of_the_crane.remains,if=talent.courageous_impulse&combo_strike&buff.bok_proc.stack=2" );
   default_st->add_action(
       "blackout_kick,target_if=min:debuff.mark_of_the_crane.remains,if=combo_strike&buff.ordered_elements.up&cooldown."
       "rising_sun_kick.remains>1&cooldown.fists_of_fury.remains>2" );

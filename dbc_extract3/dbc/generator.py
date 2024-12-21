@@ -1517,11 +1517,14 @@ class SpellDataGenerator(DataGenerator):
          457630, 455523, 457628, # Woven Dusk Tailoring Set
          463059, # Darkmoon Deck: Ascension
          463232, # Darkmoon Sigil: Symbiosis
+         454979, 454862, 454980, 454977, 454978, 454976, 454975, 454982, # Darkmoon Deck: Vivacity
          441508, 441507, 441430, # Nerubian Phearomone Secreter
          455441, 455454, 455455, 455456, #Unstable Power Core Mastery Crit Haste Vers
          455521, 455522, 457627, # Woven Dawn Tailoring Set
          449441, # Fury of the Stormrook Set
          469917, 469920, # golem gearbox
+         # 11.1
+         1217431, 1217432, 1217427, 1217638, 1217665, 1217675, 1217676, 1217723, # Zee's Thug Hotline
         ),
 
         # Warrior:
@@ -1802,6 +1805,8 @@ class SpellDataGenerator(DataGenerator):
             ( 391232, 0 ),          # Maddening Touch Insanity
             ( 409502, 0 ),          # DF Season 2 4pc
             ( 148859, 0 ),          # Shadowy Apparitions Travel Spell
+            ( 1215702, 0 ),         # Priest Shadow 11.1 Class Set 2pc
+            ( 1215703, 0 ),         # Priest Shadow 11.1 Class Set 4pc
             # Holy Priest
             ( 196809, 5 ),          # Healing Light (Divine Image legendary pet spell)
             ( 196810, 5 ),          # Dazzling Light (Divine Image legendary pet spell)
@@ -2003,6 +2008,7 @@ class SpellDataGenerator(DataGenerator):
           ( 451137, 0 ), ( 450511, 0 ), ( 451031, 0 ),  # Call of the Ancestors spells
           ( 447419, 0 ),                                # Call of the Ancestor Lava Burst
           ( 447427, 0 ),                                # Call of the Ancestor Elemental Blast
+          ( 465717, 0 ),                                # Call of the Ancestor Elemental Blast NEW
           ( 447425, 0 ),                                # Call of the Ancestor Chain Lightning
           ( 470058, 0 ),                                # Voltaic Blaze override buff
           ( 467283, 0 ),                                # Reactivity proc
@@ -4056,6 +4062,11 @@ class SetBonusListGenerator(DataGenerator):
             'name'   : 'woven_dawn',
             'bonuses': [ 1683 ],
             'tier'   : 'TWW_WDawn'
+        },
+        {
+            'name'   : 'thewarwithin_season_2',
+            'bonuses': [ 1867, 1868, 1869, 1870, 1871, 1872, 1873, 1874, 1875, 1876, 1877, 1878, 1879 ],
+            'tier'   : 'TWW2'
         },
     ]
 

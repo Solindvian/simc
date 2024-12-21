@@ -21,10 +21,7 @@ temporary_enchant=disabled
 # SimulationCraft is always looking for updates and improvements to the default action lists.
 
 # Executed before combat begins. Accepts non-harmful actions only.
-actions.precombat=flask
-actions.precombat+=/food
-actions.precombat+=/augmentation
-actions.precombat+=/windfury_weapon
+actions.precombat=windfury_weapon
 actions.precombat+=/flametongue_weapon
 actions.precombat+=/lightning_shield
 actions.precombat+=/variable,name=trinket1_is_weird,value=trinket.1.is.algethar_puzzle_box|trinket.1.is.manic_grieftorch|trinket.1.is.elementium_pocket_anvil|trinket.1.is.beacon_to_the_beyond

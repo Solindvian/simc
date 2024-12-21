@@ -1,4 +1,4 @@
-SimulationCraft 1100-02 for World of Warcraft 11.0.5.57534 Live
+SimulationCraft 1100-02 for World of Warcraft 11.0.7.58187 Live
 Name             : Command (desc=Racial Passive) (id=21563) [Spell Family (9), Passive] 
 Class            : Warrior, Paladin, Hunter, Rogue, Priest, Death Knight, Shaman, Mage, Warlock, Monk, Druid, Demon Hunter, Evoker
 Race             : Orc (0x2)
@@ -280,11 +280,13 @@ Labels           : 1224
 Attributes       : Missile Speed is Delay (in sec) (292), Reset cooldown upon ending an encounter (333)
 Effects          :
 #1 (id=477694)   : Trigger Missiles (32)
-                   Base Value: 0 | Scaled Value: 0 | Trigger Spell: 256893 | Radius: 0 - 5 yards | Target: Enemy (6)
-Description      : Call down a strike of Holy energy, dealing $<damage> Holy damage to enemies within $A1 yards after 3 sec.
-Variables        : $damage=${$cond($gt($SP,$AP),$SP*3,$AP*3)*$pctD*(1+$@versadmg)}
+                   Base Value: 3 | Scaled Value: 3 | Trigger Spell: 256893 | Radius: 0 - 10 yards | Target: Enemy (6)
+#2 (id=1192214)  : Dummy (3)
+                   Base Value: 8 | Scaled Value: 8
+Description      : Call down a strike of Holy energy, dealing $<damage> Holy damage to enemies within $A1 yards after $s1 sec. Damage reduced beyond $s2 targets.
+Variables        : $damage=${$cond($gt($SP,$AP),$SP*4.2,$AP*4.2)*$pctD*(1+$@versadmg)}
 
-Name             : Holy Resistance (desc=Racial Passive) (id=255651) [Passive] 
+Name             : Holy Providence (desc=Racial Passive) (id=255651) [Passive] 
 Class            : Warrior, Paladin, Hunter, Rogue, Priest, Death Knight, Shaman, Mage, Warlock, Monk, Druid, Demon Hunter, Evoker
 Race             : Lightforged Draenei (0x20000000)
 School           : Holy
@@ -294,7 +296,10 @@ Effects          :
 #1 (id=477698)   : Apply Aura (6) | Modify Damage Taken% (87)
                    Base Value: -1 | Scaled Value: -1 | Misc Value: 0x2 | Target: Self (1)
                    Affected School(s): Holy
-Description      : Reduces Holy damage taken by ${$s1/-1}%.
+#2 (id=1192226)  : Apply Aura (6) | Modify Healing% Done (136)
+                   Base Value: 1 | Scaled Value: 1 | Misc Value: 0x7f | Target: Self (1)
+                   Affected School(s): All
+Description      : Reduces Holy damage taken by ${$s1/-1}% and increases healing done by $s2%.
 
 Name             : Light's Reckoning (desc=Racial Passive) (id=255652) [Passive] 
 Class            : Warrior, Paladin, Hunter, Rogue, Priest, Death Knight, Shaman, Mage, Warlock, Monk, Druid, Demon Hunter, Evoker
@@ -329,9 +334,9 @@ Cooldown         : 150 seconds
 Triggered By     : Light's Judgment (255647)
 Effects          :
 #1 (id=479673)   : School Damage (2): holy
-                   Base Value: 0 | Scaled Value: 0 | PvP Coefficient: 0.5 | Radius: 0 - 5 yards | Target: At Enemy (53) -> At Enemy in Area (16)
+                   Base Value: 0 | Scaled Value: 0 | PvP Coefficient: 0.5 | Radius: 0 - 10 yards | Target: At Enemy (53) -> At Enemy in Area (16)
 Description      : Call down a strike of Holy energy, dealing $<damage> Holy damage to enemies within $A1 yards.
-Variables        : $damage=${$cond($gt($SP,$AP),$SP*3,$AP*3)*$pctD*(1+$@versadmg)}
+Variables        : $damage=${$cond($gt($SP,$AP),$SP*4.2,$AP*4.2)*$pctD*(1+$@versadmg)}
 
 Name             : Light's Reckoning (desc=Racial Passive) (id=256896) 
 Class            : Warrior, Paladin, Hunter, Rogue, Priest, Death Knight, Shaman, Mage, Warlock, Monk, Druid, Demon Hunter, Evoker
@@ -413,8 +418,8 @@ Labels           : 16: Class Spells
                  : 292
                  : 1216: Flow State (390148 effect#2), Flow State (390148 effect#9), Flow State (390148 effect#11), Time Skip (404977 effect#1), Interwoven Threads (412713 effect#1), Temporal Burst (431698 effect#3), Burning Adrenaline (444019 effect#1)
                  : 1468: Fire Breath (357209 effect#6), Might of the Black Dragonflight (441705 effect#1), Might of the Black Dragonflight (441705 effect#2)
-Affecting Spells : Devastation Evoker (356809 effects: #1, #2), Preservation Evoker (356810 effects: #3, #4), Initial Evoker (356816 effects: #3, #4), Shattering Star (370452 effect#3), Spellweaver's Dominance (370845 effect#1), Lay Waste (371034 effect#1), Boon of the Covenants (387169 effects: #1, #2), Spark of Savagery (387201 effect#1), Ebon Might (395296 effects: #1, #5), Augmentation Evoker (396186 effects: #1, #2), Evoker Augmentation 10.0 Class Set 4pc (415221 effects: #1, #2), Emerald Trance (424155 effects: #1, #2), Emerald Trance (424402 effects: #1, #2)
-Triggered By     : Deep Breath (362010), Deep Breath (433874), Aerial Bombardment (440263)
+Affecting Spells : Devastation Evoker (356809 effects: #1, #2), Preservation Evoker (356810 effects: #3, #4), Initial Evoker (356816 effects: #3, #4), Shattering Star (370452 effect#3), Spellweaver's Dominance (370845 effect#1), Lay Waste (371034 effect#1), Boon of the Covenants (387169 effects: #1, #2), Spark of Savagery (387201 effect#1), Ebon Might (395296 effects: #1, #5), Augmentation Evoker (396186 effects: #1, #2, #19), Evoker Augmentation 10.0 Class Set 4pc (415221 effects: #1, #2), Emerald Trance (424155 effects: #1, #2), Emerald Trance (424402 effects: #1, #2)
+Triggered By     : Deep Breath (362010), Aerial Bombardment (440263)
 Family Flags     : 0, 34
 Attributes       : DoT Stacking Rule (103), Extra Initial Period (169), Spell Haste Affects Periodic (173), Always AOE Line of Sight (186), Periodic Can Crit (265), Aura Points On Client (268), Allow Class Ability Procs (416)
 Effects          :
@@ -589,13 +594,15 @@ Labels           : 16: Class Spells
 Attributes       : Is Ability (4), Passive (6), Do Not Display (Spellbook, Aura Icon, Combat Log) (7), Do Not Log (8), Allow Class Ability Procs (416)
 Effects          :
 #1 (id=890885)   : Apply Aura (6) | Add Percent Modifier (108): Spell Direct Amount (0)
-                   Base Value: 9 | Scaled Value: 9 | Target: Self (1)
+                   Base Value: 13 | Scaled Value: 13 | PvP Coefficient: 0.6923 | Target: Self (1)
                    Affected Spells: Deep Breath (353759), Disintegrate (356995), Fire Breath (357209), Pyre (357212), Eternity Surge (359077), Living Flame (361500), Azure Strike (362969), Unravel (368432), Firestorm (369374), Shattering Star (370452), Eruption (395160), Upheaval (396288), Eruption (424428), Eruption (438653), FX Poison Wave Test - SK [DNT] (439253), Melt Armor (441172), Engulf (443329), Fire Breath (444249), Firestorm (456657)
                    Family Flags: 0
+Hotfixed         : Base Value (9 -> 13), PvP Coefficient (1 -> 0.6923)
 #2 (id=910332)   : Apply Aura (6) | Add Percent Modifier (108): Spell Periodic Amount (22)
-                   Base Value: 9 | Scaled Value: 9 | Misc Value: 22 | Target: Self (1)
+                   Base Value: 13 | Scaled Value: 13 | PvP Coefficient: 0.6923 | Misc Value: 22 | Target: Self (1)
                    Affected Spells: Deep Breath (353759), Disintegrate (356995), Fire Breath (357209), Pyre (357212), Eternity Surge (359077), Living Flame (361500), Azure Strike (362969), Unravel (368432), Firestorm (369374), Shattering Star (370452), Eruption (395160), Upheaval (396288), Eruption (424428), Eruption (438653), FX Poison Wave Test - SK [DNT] (439253), Melt Armor (441172), Engulf (443329), Fire Breath (444249), Firestorm (456657)
                    Family Flags: 0
+Hotfixed         : Base Value (9 -> 13), PvP Coefficient (1 -> 0.6923)
 #3 (id=910333)   : Apply Aura (6) | Modify Mana Regen% (379)
                    Base Value: 2 | Scaled Value: 2 | Target: Self (1)
 #4 (id=910446)   : Apply Aura (6) | Add Percent Modifier (108): Spell Direct Amount (0)
@@ -911,8 +918,9 @@ Effects          :
                    Base Value: 20 | Scaled Value: 20 | SP Coefficient: 0.274 | Misc Value: 1464 (Label) | Radius: 2 - 30 yards | Target: Unknown(47) -> Cone to Enemy (104)
                    Affected Spells (Label): Fire Breath (357208), Fire Breath (357209), Pyre (357211), Pyre (357212), Living Flame (361469), Living Flame (361500), Living Flame (361509), Fire Breath (366903), Fire Breath (366904), Fire Breath (366905), Firestorm (368847), Firestorm (369372), Firestorm (369374), Engulfing Blaze (370837), Life-Giver's Flame (371441), Cauterizing Flame (374251), Renewing Blaze (374348), Renewing Blaze (374349), Dragonrage (375087), Fire Breath (382266), Chrono Flames (431443), Chrono Flame (431483), Chrono Flame (431582), Chrono Flame (431583), Chrono Flame (431584), Engulf (443328), Engulf (443329), Engulf (443330), Burning Adrenaline (444019), Burning Adrenaline (444020), Consume Flame (444089), Fire Breath (444249), Firestorm (456657)
 #6 (id=1166934)  : Apply Aura (6) | Modify Damage Taken% from Caster's Spells (Label) (537) | Attributes: Area Effects Use Target Radius (17)
-                   Base Value: 20 | Scaled Value: 20 | SP Coefficient: 0.274 | Misc Value: 1468 (Label) | Radius: 2 - 30 yards | Target: Unknown(47) -> Cone to Enemy (104)
+                   Base Value: 20 | Scaled Value: 20 | SP Coefficient: 0.274 | PvP Coefficient: 0.5 | Misc Value: 1468 (Label) | Radius: 2 - 30 yards | Target: Unknown(47) -> Cone to Enemy (104)
                    Affected Spells (Label): Deep Breath (353759), Landslide (355689), Deep Breath (357210), Landslide (358385), Blistering Scales (360827), Blistering Scales (360828), Deep Breath (362010), Deep Breath (362019), Landslide (363800), Obsidian Scales (363916), Oppressing Roar (372048), Terror of the Skies (372245), Ebon Might (395152), Eruption (395160), Upheaval (396286), Upheaval (396288), Black Attunement (403264), Oppressing Roar (406971), Upheaval (408092), Eruption (424428), Ebon Might (426404), Upheaval (431620), Deep Breath (433874), Bombardments (434481), Eruption (438653), FX Poison Wave Test - SK [DNT] (439253), Aerial Bombardment (440263), Aerial Bombardment (440283), Melt Armor (441172)
+Hotfixed         : PvP Coefficient (1 -> 0.5)
 Description      : $@spelldesc357208
 Tooltip          : Burning for $w2 Fire damage every $t2 sec.$?$W3=1[ Silenced.][]$?e4[ Suffering $s5% increased damage from Red spells.][]$?e5[ Suffering $w6% increased damage from Black spells.][]
 
@@ -990,7 +998,8 @@ Family Flags     : 0, 5, 38
 Attributes       : Do Not Display Range (126), Allow Cast While Casting (135), Allow Cast While Channeling (308), Use Spell Base Level For Scaling (332), Allow Class Ability Procs (416)
 Effects          :
 #1 (id=891602)   : School Damage (2): fire | Attributes: Always AOE Line of Sight (5)
-                   Base Value: 0 | Scaled Value: 0 (delta=0.05) | SP Coefficient: 1.73998 | Radius: 0 - 8 yards | Target: Unknown(87) -> At Enemy in Area (16)
+                   Base Value: 0 | Scaled Value: 0 (delta=0.05) | SP Coefficient: 2.09 | Radius: 0 - 8 yards | Target: Unknown(87) -> At Enemy in Area (16)
+Hotfixed         : SP Coefficient (1.73998 -> 2.09)
 Description      : $@spelldesc357211
 
 Name             : Hover (id=357302) [Spell Family (224)] 
@@ -3382,7 +3391,7 @@ Attributes       : Do Not Log Immune Misses (3), Aura Is Debuff (26), No Threat 
 Effects          :
 #1 (id=982471)   : Apply Aura (6) | Decrease Movement Speed% (33)
                    Base Value: -50 | Scaled Value: -50 | Target: Enemy (6)
-Description      : $@spelldesc370897
+Description      : $@spelldesc381773
 Tooltip          : Movement speed reduced by $w1%.
 
 Name             : Leaping Flames (id=370901) [Spell Family (224)] 
@@ -3802,6 +3811,7 @@ Duration         : Aura (infinite)
 Labels           : 16: Class Spells
                  : 292
 Attributes       : Allow Cast While Dead (23), No Aura Cancel (31), Can't Crit (93), Suppress Caster Procs (112), Suppress Target Procs (113), Allow Aura While Dead (116), Suppress Weapon Procs (151), Ignore Healing Modifiers (219), Disable Aura While Dead (226), Do Not Log Full Overheal (323), Always Allow Negative Healing Percent Modifiers (442)
+Aura Interrupt   : Leave World (19)
 Effects          :
 #1 (id=996412)   : Unknown(271) | Periodic Heal% (20): every 2 seconds
                    Base Value: 2 | Scaled Value: 2 | Radius: 40 yards | Target: Self (1)
@@ -7368,6 +7378,11 @@ Effects          :
                    Base Value: -25 | Scaled Value: -25 | Misc Value 2: 2840 (Label) | Target: Self (1)
 #18 (id=1097343) : Apply Aura (6) | Apply Percent Modifier w/ Label (218): Spell Periodic Amount (22)
                    Base Value: -25 | Scaled Value: -25 | Misc Value: 22 | Misc Value 2: 2840 (Label) | Target: Self (1)
+#19 (id=1206693) : Apply Aura (6) | Add Percent Modifier (108): Spell Periodic Amount (22)
+                   Base Value: -15 | Scaled Value: -15 | Misc Value: 22 | Target: Self (1)
+                   Affected Spells: Deep Breath (353759), FX Poison Wave Test - SK [DNT] (439253), Melt Armor (441172)
+                   Family Flags: 34
+Hotfixed         : NEW EFFECT
 
 Name             : Essence Burst (id=396187) [Spell Family (224), Passive] 
 Talent Entry     : Augmentation [tree=spec, row=2, col=2, max_rank=1, req_points=0]
@@ -11108,7 +11123,7 @@ Effects          :
 #4 (id=1123477)  : Apply Aura (6) | Decrease Movement Speed% (33)
                    Base Value: -200 | Scaled Value: -200 | Target: Self (1)
 #5 (id=1149053)  : Apply Aura (6) | Periodic Dummy (226): every 0.2 seconds
-                   Base Value: -200 | Scaled Value: -200 | Trigger Spell: 353759 | Target: Self (1)
+                   Base Value: -200 | Scaled Value: -200 | Target: Self (1)
 #6 (id=1149054)  : Apply Aura (6) | Increase Speed% (31)
                    Base Value: 200 | Scaled Value: 200 | Target: Self (1)
 #7 (id=1149055)  : Apply Aura (6) | Forced Movement (241)
@@ -11342,7 +11357,7 @@ Labels           : 16: Class Spells
                  : 292
                  : 1216: Flow State (390148 effect#2), Flow State (390148 effect#9), Flow State (390148 effect#11), Time Skip (404977 effect#1), Interwoven Threads (412713 effect#1), Temporal Burst (431698 effect#3), Burning Adrenaline (444019 effect#1)
                  : 1468: Fire Breath (357209 effect#6), Might of the Black Dragonflight (441705 effect#1), Might of the Black Dragonflight (441705 effect#2)
-Affecting Spells : Devastation Evoker (356809 effects: #1, #2), Preservation Evoker (356810 effects: #3, #4), Initial Evoker (356816 effects: #3, #4), Shattering Star (370452 effect#3), Spellweaver's Dominance (370845 effect#1), Lay Waste (371034 effect#1), Boon of the Covenants (387169 effects: #1, #2), Spark of Savagery (387201 effect#1), Ebon Might (395296 effects: #1, #5), Augmentation Evoker (396186 effects: #1, #2), Evoker Augmentation 10.0 Class Set 4pc (415221 effects: #1, #2), Emerald Trance (424155 effects: #1, #2), Emerald Trance (424402 effects: #1, #2)
+Affecting Spells : Devastation Evoker (356809 effects: #1, #2), Preservation Evoker (356810 effects: #3, #4), Initial Evoker (356816 effects: #3, #4), Shattering Star (370452 effect#3), Spellweaver's Dominance (370845 effect#1), Lay Waste (371034 effect#1), Boon of the Covenants (387169 effects: #1, #2), Spark of Savagery (387201 effect#1), Ebon Might (395296 effects: #1, #5), Augmentation Evoker (396186 effects: #1, #2, #19), Evoker Augmentation 10.0 Class Set 4pc (415221 effects: #1, #2), Emerald Trance (424155 effects: #1, #2), Emerald Trance (424402 effects: #1, #2)
 Family Flags     : 0, 34
 Attributes       : DoT Stacking Rule (103), Extra Initial Period (169), Spell Haste Affects Periodic (173), Periodic Can Crit (265), Aura Points On Client (268), Allow Class Ability Procs (416)
 Effects          :
@@ -11423,7 +11438,7 @@ Labels           : 16: Class Spells
                  : 292
                  : 1216: Flow State (390148 effect#2), Flow State (390148 effect#9), Flow State (390148 effect#11), Time Skip (404977 effect#1), Interwoven Threads (412713 effect#1), Temporal Burst (431698 effect#3), Burning Adrenaline (444019 effect#1)
                  : 1468: Fire Breath (357209 effect#6), Might of the Black Dragonflight (441705 effect#1), Might of the Black Dragonflight (441705 effect#2)
-Affecting Spells : Devastation Evoker (356809 effects: #1, #2), Preservation Evoker (356810 effects: #3, #4), Initial Evoker (356816 effects: #3, #4), Shattering Star (370452 effect#3), Spellweaver's Dominance (370845 effect#1), Lay Waste (371034 effect#1), Boon of the Covenants (387169 effects: #1, #2), Spark of Savagery (387201 effect#1), Ebon Might (395296 effects: #1, #5), Augmentation Evoker (396186 effects: #1, #2), Evoker Augmentation 10.0 Class Set 4pc (415221 effects: #1, #2), Emerald Trance (424155 effects: #1, #2), Emerald Trance (424402 effects: #1, #2)
+Affecting Spells : Devastation Evoker (356809 effects: #1, #2), Preservation Evoker (356810 effects: #3, #4), Initial Evoker (356816 effects: #3, #4), Shattering Star (370452 effect#3), Spellweaver's Dominance (370845 effect#1), Lay Waste (371034 effect#1), Boon of the Covenants (387169 effects: #1, #2), Spark of Savagery (387201 effect#1), Ebon Might (395296 effects: #1, #5), Augmentation Evoker (396186 effects: #1, #2, #19), Evoker Augmentation 10.0 Class Set 4pc (415221 effects: #1, #2), Emerald Trance (424155 effects: #1, #2), Emerald Trance (424402 effects: #1, #2)
 Family Flags     : 0, 34
 Attributes       : DoT Stacking Rule (103), Spell Haste Affects Periodic (173), Periodic Can Crit (265), Aura Points On Client (268), Allow Class Ability Procs (416)
 Effects          :
@@ -11720,7 +11735,7 @@ Effects          :
 #1 (id=1137191)  : Apply Aura (6) | Disable Abilities (263)
                    Base Value: 0 | Scaled Value: 0 | Target: Self (1)
 #2 (id=1137192)  : Apply Aura (6) | Periodic Dummy (226): every 0.2 seconds
-                   Base Value: -200 | Scaled Value: -200 | Trigger Spell: 409560 | Target: Self (1)
+                   Base Value: 0 | Scaled Value: 0 | Trigger Spell: 409560 | Target: Self (1)
 #3 (id=1137193)  : Apply Aura (6) | Mechanic Immunity (147)
                    Base Value: 0 | Scaled Value: 0 | Misc Value: 2360 | Target: Self (1)
 #4 (id=1137194)  : Apply Aura (6) | Decrease Movement Speed% (33)
@@ -11730,7 +11745,7 @@ Effects          :
 #6 (id=1137196)  : Apply Aura (6) | Unknown(488)
                    Base Value: 0 | Scaled Value: 0 | Target: Self (1)
 #7 (id=1137197)  : Apply Aura (6) | Forced Movement (241)
-                   Base Value: 0 | Scaled Value: 0 | Radius: 100 yards | Target: Unknown(120)
+                   Base Value: 0 | Scaled Value: 0 | Target: Self (1)
 #8 (id=1149061)  : Apply Aura (6) | Unknown(634)
                    Base Value: 100 | Scaled Value: 100 | Target: Self (1)
 #9 (id=1149062)  : Apply Aura (6) | Unknown(406)
@@ -12627,7 +12642,8 @@ Labels           : 16: Class Spells
 Attributes       : Passive (6), Not In Spellbook (143), Do Not Log on Learn (355), Allow Class Ability Procs (416)
 Effects          :
 #1 (id=1166747)  : Apply Aura (6) | Dummy (4)
-                   Base Value: 40 | Scaled Value: 40 | Target: Self (1)
+                   Base Value: 40 | Scaled Value: 40 | PvP Coefficient: 0.5 | Target: Self (1)
+Hotfixed         : PvP Coefficient (1 -> 0.5)
 Description      : Fire Breath causes enemies to take up to $s1% increased damage from your Black spells, increased based on its empower level.
 
 Name             : Golden Opportunity (desc=Bronze) (id=459878) [Spell Family (224)] 

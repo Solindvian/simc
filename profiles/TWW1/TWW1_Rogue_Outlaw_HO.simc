@@ -22,9 +22,6 @@ temporary_enchant=main_hand:ironclaw_whetstone_3/off_hand:ironclaw_whetstone_3
 
 # Executed before combat begins. Accepts non-harmful actions only.
 actions.precombat=apply_poison,nonlethal=none,lethal=instant
-actions.precombat+=/flask
-actions.precombat+=/augmentation
-actions.precombat+=/food
 # Snapshot raid buffed stats before combat begins and pre-potting is done.
 actions.precombat+=/snapshot_stats
 actions.precombat+=/use_item,name=imperfect_ascendancy_serum

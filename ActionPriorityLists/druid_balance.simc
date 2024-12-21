@@ -8,11 +8,8 @@
 # Balance APL can be found at https://www.dreamgrove.gg/sims/owl/balance.txt
 
 # Executed before combat begins. Accepts non-harmful actions only.
-actions.precombat=flask
-actions.precombat+=/food
-actions.precombat+=/augmentation
 # Snapshot raid buffed stats before combat begins and pre-potting is done.
-actions.precombat+=/snapshot_stats
+actions.precombat=snapshot_stats
 # Snapshot raid buffed stats before combat begins and pre-potting is done.
 actions.precombat+=/variable,name=no_cd_talent,value=!talent.celestial_alignment&!talent.incarnation_chosen_of_elune|druid.no_cds
 actions.precombat+=/variable,name=on_use_trinket,value=0

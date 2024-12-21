@@ -470,6 +470,7 @@ public:
     unsigned initial_spellfire_spheres = 5;
     arcane_phoenix_rotation arcane_phoenix_rotation_override = arcane_phoenix_rotation::DEFAULT;
     bool ice_nova_consumes_winters_chill = true;
+    bool fof_ice_lance_consumes_winters_chill = true;
   } options;
 
   // Pets
@@ -507,6 +508,7 @@ public:
     proc_t* flurry_cast;
     proc_t* winters_chill_applied;
     proc_t* winters_chill_consumed;
+    proc_t* winters_chill_expired;
 
     proc_t* icicles_generated;
     proc_t* icicles_fired;
@@ -783,7 +785,7 @@ public:
     player_talent_t fiery_rush;
     player_talent_t meteor;
     player_talent_t firefall;
-    player_talent_t explosivo;
+    player_talent_t cratermaker;
 
     // Row 10
     player_talent_t hyperthermia;
@@ -1668,7 +1670,10 @@ struct ice_floes_t final : public buff_t
     if ( !check() )
       return;
 
-    if ( sim->current_time() - last_trigger > 0.5_s )
+    // The grace period seems to be present only if you have a single
+    // Ice Floes stack; this is a change introduced most likely in 11.0.5
+    // TODO: Some spells still follow the old behavior (Flamestrike, Pyroblast, Arcane Missiles)
+    if ( check() > 1 || sim->current_time() - last_trigger > 0.5_s )
       buff_t::decrement( stacks, value );
     else
       sim->print_debug( "Ice Floes removal ignored due to 500 ms protection" );
@@ -1896,6 +1901,7 @@ struct mage_spell_t : public spell_t
     bool chill = false;
     bool clearcasting = false;
     bool from_the_ashes = false;
+    bool frostfire_infusion = true;
     bool frostfire_mastery = true;
     bool ignite = false;
     bool overflowing_energy = true;
@@ -2281,7 +2287,7 @@ public:
 
     if ( dbc::has_common_school( get_school(), SCHOOL_FROSTFIRE ) && s->result_type == result_amount_type::DMG_DIRECT )
     {
-      if ( p()->rppm.frostfire_infusion->trigger() )
+      if ( triggers.frostfire_infusion && p()->rppm.frostfire_infusion->trigger() )
         p()->action.frostfire_infusion->execute_on_target( s->target );
       p()->buffs.frostfire_empowerment->trigger();
     }
@@ -3068,25 +3074,26 @@ struct hot_streak_spell_t : public custom_state_spell_t<fire_mage_spell_t, hot_s
       trigger_tracking_buff( p()->buffs.sun_kings_blessing, p()->buffs.fury_of_the_sun_king );
       p()->trigger_lit_fuse();
       p()->trigger_mana_cascade();
+    }
 
-      // TODO: Test the proc chance and whether this works with Hyperthermia and Lit Fuse.
-      if ( p()->cooldowns.pyromaniac->up() && p()->accumulated_rng.pyromaniac->trigger() )
+    // TODO: Test the proc chance and whether this works with Hyperthermia and Lit Fuse.
+    // TODO: Pyromaniac seems to proc regardless of Hot Streak state
+    if ( ( last_hot_streak || p()->bugs ) && p()->cooldowns.pyromaniac->up() && p()->accumulated_rng.pyromaniac->trigger() )
+    {
+      p()->cooldowns.pyromaniac->start( p()->talents.pyromaniac->internal_cooldown() );
+
+      trigger_tracking_buff( p()->buffs.sun_kings_blessing, p()->buffs.fury_of_the_sun_king );
+      p()->trigger_lit_fuse();
+      p()->trigger_spellfire_spheres();
+      p()->trigger_mana_cascade();
+
+      assert( pyromaniac_action );
+      // Pyromaniac Pyroblast actually casts on the Mage's target, but that is probably a bug.
+      make_event( *sim, 500_ms, [ this, t = target ]
       {
-        p()->cooldowns.pyromaniac->start( p()->talents.pyromaniac->internal_cooldown() );
-
-        trigger_tracking_buff( p()->buffs.sun_kings_blessing, p()->buffs.fury_of_the_sun_king );
-        p()->trigger_lit_fuse();
-        p()->trigger_spellfire_spheres();
-        p()->trigger_mana_cascade();
-
-        assert( pyromaniac_action );
-        // Pyromaniac Pyroblast actually casts on the Mage's target, but that is probably a bug.
-        make_event( *sim, 500_ms, [ this, t = target ]
-        {
-          pyromaniac_action->execute_on_target( t );
-          p()->buffs.sparking_cinders->decrement();
-        } );
-      }
+        pyromaniac_action->execute_on_target( t );
+        p()->buffs.sparking_cinders->decrement();
+      } );
     }
   }
 };
@@ -3144,21 +3151,24 @@ struct frost_mage_spell_t : public mage_spell_t
 
     unsigned frozen = cast_state( s )->frozen;
 
-    if ( frozen & FF_WINTERS_CHILL )
+    if ( frozen & FF_FINGERS_OF_FROST )
+      source->occur( FROZEN_FINGERS_OF_FROST );
+    else if ( frozen & FF_WINTERS_CHILL )
       source->occur( FROZEN_WINTERS_CHILL );
     else if ( frozen & FF_ROOT )
       source->occur( FROZEN_ROOT );
-    else if ( frozen & FF_FINGERS_OF_FROST )
-      source->occur( FROZEN_FINGERS_OF_FROST );
     else
       source->occur( FROZEN_NONE );
   }
+
+  virtual bool should_consume_winters_chill( const action_state_t* s, bool execute = false ) const
+  { return consumes_winters_chill; }
 
   void execute() override
   {
     mage_spell_t::execute();
 
-    if ( !background && consumes_winters_chill )
+    if ( !background && execute_state && should_consume_winters_chill( execute_state, true ) )
       p()->expression_support.remaining_winters_chill = std::max( p()->expression_support.remaining_winters_chill - 1, 0 );
   }
 
@@ -3176,7 +3186,7 @@ struct frost_mage_spell_t : public mage_spell_t
 
       if ( auto td = find_td( s->target ) )
       {
-        if ( consumes_winters_chill && td->debuffs.winters_chill->check() )
+        if ( td->debuffs.winters_chill->check() && should_consume_winters_chill( s ) )
         {
           td->debuffs.winters_chill->decrement();
           p()->trigger_splinter( s->target );
@@ -4220,7 +4230,7 @@ struct combustion_t final : public fire_mage_spell_t
     p()->cooldowns.fire_blast->reset( false, as<int>( p()->talents.spontaneous_combustion->effectN( 1 ).base_value() ) );
     p()->cooldowns.phoenix_flames->reset( false, as<int>( p()->talents.spontaneous_combustion->effectN( 2 ).base_value() ) );
     p()->trigger_flash_freezeburn();
-    if ( p()->talents.explosivo.ok() )
+    if ( p()->talents.cratermaker.ok() )
     {
       p()->buffs.lit_fuse->trigger();
       p()->buffs.lit_fuse->predict();
@@ -5446,6 +5456,18 @@ struct ice_lance_t final : public custom_state_spell_t<frost_mage_spell_t, ice_l
     return source;
   }
 
+  bool should_consume_winters_chill( const action_state_t* s, bool execute = false ) const override
+  {
+    if ( !p()->options.fof_ice_lance_consumes_winters_chill )
+    {
+      // mage_spell_state_t::frozen isn't available during execute, use ice_lance_data_t::fingers_of_frost instead.
+      if ( ( execute && cast_state( s )->data.fingers_of_frost ) || ( !execute && cast_state( s )->frozen & FF_FINGERS_OF_FROST ) )
+        return false;
+    }
+
+    return custom_state_spell_t::should_consume_winters_chill( s, execute );
+  }
+
   void schedule_travel( action_state_t* s ) override
   {
     custom_state_spell_t::schedule_travel( s );
@@ -5504,7 +5526,8 @@ struct ice_lance_t final : public custom_state_spell_t<frost_mage_spell_t, ice_l
         record_shatter_source( s, extension_source );
       }
 
-      if ( frozen &  FF_FINGERS_OF_FROST
+      if ( p()->options.fof_ice_lance_consumes_winters_chill
+        && frozen &  FF_FINGERS_OF_FROST
         && frozen & ~FF_FINGERS_OF_FROST )
       {
         p()->procs.fingers_of_frost_wasted->occur();
@@ -5524,6 +5547,11 @@ struct ice_lance_t final : public custom_state_spell_t<frost_mage_spell_t, ice_l
 
     if ( frozen & FF_FINGERS_OF_FROST && frigid_pulse )
       frigid_pulse->execute_on_target( s->target );
+
+    // Trigger splinter only if the Ice Lance didn't attempt to consume Winter's Chill.
+    // TODO: figure out what happens when IL cleaves
+    if ( !should_consume_winters_chill( s ) )
+      p()->trigger_splinter( s->target );
   }
 
   double action_multiplier() const override
@@ -5757,7 +5785,7 @@ struct living_bomb_explosion_t final : public fire_mage_spell_t
       // TODO: This is currently "Add Flat Multiplier" in the data. Verify the
       // specific numbers in game, especially because scripting is involved.
       // There is also a zeroed "Add Percent Multiplier" on Combustion for Living Bomb.
-      am *= 1.0 + p()->talents.explosivo->effectN( 2 ).percent();
+      am *= 1.0 + p()->talents.cratermaker->effectN( 2 ).percent();
 
     return am;
   }
@@ -6391,6 +6419,7 @@ struct scorch_t final : public custom_state_spell_t<fire_mage_spell_t, scorch_da
     parse_options( options_str );
     triggers.hot_streak = triggers.calefaction = triggers.unleashed_inferno = triggers.kindling = TT_MAIN_TARGET;
     affected_by.unleashed_inferno = triggers.ignite = triggers.from_the_ashes = true;
+    triggers.frostfire_infusion = false;
     // There is a tiny delay between Scorch dealing damage and Hot Streak
     // state being updated. Here we model it as a tiny travel time.
     travel_delay = p->options.scorch_delay.total_seconds();
@@ -7512,7 +7541,13 @@ mage_td_t::mage_td_t( player_t* target, mage_t* mage ) :
                                      ->set_default_value_from_effect( 1 )
                                      ->set_chance( mage->talents.glacial_assault.ok() );
   debuffs.touch_of_the_magi      = make_buff<buffs::touch_of_the_magi_t>( this );
-  debuffs.winters_chill          = make_buff( *this, "winters_chill", mage->find_spell( 228358 ) );
+  debuffs.winters_chill          = make_buff( *this, "winters_chill", mage->find_spell( 228358 ) )
+                                     ->set_expire_callback( [ mage ] ( buff_t*, int stacks, timespan_t duration )
+                                       {
+                                         if ( duration != 0_ms ) return;
+                                         for ( int i = 0; i < stacks; i++ )
+                                           mage->procs.winters_chill_expired->occur();
+                                       } );
 }
 
 mage_t::mage_t( sim_t* sim, std::string_view name, race_e r ) :
@@ -7653,7 +7688,7 @@ void mage_t::create_actions()
   if ( talents.arcane_echo.ok() )
     action.arcane_echo = get_action<arcane_echo_t>( "arcane_echo", this );
 
-  if ( talents.lit_fuse.ok() || talents.explosivo.ok() || talents.deep_impact.ok() )
+  if ( talents.lit_fuse.ok() || talents.cratermaker.ok() || talents.deep_impact.ok() )
     action.living_bomb = get_action<living_bomb_dot_t>( "living_bomb", this );
 
   if ( talents.glacial_assault.ok() )
@@ -7755,6 +7790,7 @@ void mage_t::create_options()
                 return true;
               } ) );
   add_option( opt_bool( "mage.ice_nova_consumes_winters_chill", options.ice_nova_consumes_winters_chill ) );
+  add_option( opt_bool( "mage.fof_ice_lance_consumes_winters_chill", options.fof_ice_lance_consumes_winters_chill ) );
 
   player_t::create_options();
 }
@@ -8057,7 +8093,7 @@ void mage_t::init_spells()
   talents.fiery_rush             = find_talent_spell( talent_tree::SPECIALIZATION, "Fiery Rush"             );
   talents.meteor                 = find_talent_spell( talent_tree::SPECIALIZATION, "Meteor"                 );
   talents.firefall               = find_talent_spell( talent_tree::SPECIALIZATION, "Firefall"               );
-  talents.explosivo              = find_talent_spell( talent_tree::SPECIALIZATION, "Explosivo"              );
+  talents.cratermaker            = find_talent_spell( talent_tree::SPECIALIZATION, "Cratermaker"            );
   // Row 10
   talents.hyperthermia           = find_talent_spell( talent_tree::SPECIALIZATION, "Hyperthermia"           );
   talents.phoenix_reborn         = find_talent_spell( talent_tree::SPECIALIZATION, "Phoenix Reborn"         );
@@ -8355,7 +8391,7 @@ void mage_t::create_buffs()
                                      ->set_default_value_from_effect( 2 )
                                      ->set_trigger_spell( talents.hyperthermia );
   buffs.lit_fuse                 = make_buff( this, "lit_fuse", find_spell( 453207 ) )
-                                     ->set_chance( talents.lit_fuse.ok() || talents.explosivo.ok() );
+                                     ->set_chance( talents.lit_fuse.ok() || talents.cratermaker.ok() );
   buffs.majesty_of_the_phoenix   = make_buff( this, "majesty_of_the_phoenix", find_spell( 453329 ) )
                                      ->set_chance( talents.majesty_of_the_phoenix.ok() );
   buffs.pyrotechnics             = make_buff( this, "pyrotechnics", find_spell( 157644 ) )
@@ -8558,6 +8594,7 @@ void mage_t::init_procs()
       procs.flurry_cast                     = get_proc( "Flurry cast" );
       procs.winters_chill_applied           = get_proc( "Winter's Chill stacks applied" );
       procs.winters_chill_consumed          = get_proc( "Winter's Chill stacks consumed" );
+      procs.winters_chill_expired           = get_proc( "Winter's Chill stacks expired" );
 
       procs.icicles_generated  = get_proc( "Icicles generated" );
       procs.icicles_fired      = get_proc( "Icicles fired" );
@@ -9645,7 +9682,7 @@ void mage_t::trigger_lit_fuse()
   // TODO: Verify the proc chance with every combination of the relevant talents.
   double chance = talents.lit_fuse->effectN( 4 ).percent() + talents.explosive_ingenuity->effectN( 1 ).percent();
   if ( buffs.combustion->check() )
-    chance += talents.explosivo->effectN( 1 ).percent();
+    chance += talents.cratermaker->effectN( 1 ).percent();
   if ( rng().roll( chance ) )
     buffs.lit_fuse->trigger();
 }

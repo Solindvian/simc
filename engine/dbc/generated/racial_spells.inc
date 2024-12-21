@@ -1,4 +1,4 @@
-// Racial abilities, wow build 11.0.5.57534
+// Racial abilities, wow build 11.0.7.58187
 static const std::array<racial_spell_entry_t, 170> __racial_spell_data { {
   { 0x0000000000000001, 0x00000000,  458619, "No Place Like Home"                 },
   { 0x0000000000000001, 0x00000000,   20598, "The Human Spirit"                   },
@@ -157,7 +157,7 @@ static const std::array<racial_spell_entry_t, 170> __racial_spell_data { {
   { 0x0000000020000000, 0xffffffff,  255653, "Demonbane"                          },
   { 0x0000000020000000, 0xffffffff,  255650, "Forge of Light"                     },
   { 0x0000000020000000, 0xffffffff,  259930, "Forge of Light"                     },
-  { 0x0000000020000000, 0xffffffff,  255651, "Holy Resistance"                    },
+  { 0x0000000020000000, 0xffffffff,  255651, "Holy Providence"                    },
   { 0x0000000020000000, 0xffffffff,  255647, "Light's Judgment"                   },
   { 0x0000000020000000, 0xffffffff,  255652, "Light's Reckoning"                  },
   { 0x0000000040000000, 0x00000000,  291619, "City of Gold"                       },

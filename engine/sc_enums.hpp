@@ -853,6 +853,7 @@ enum set_bonus_type_e
   TWW1,
   TWW_WDusk,
   TWW_WDawn,
+  TWW2,
   SET_BONUS_MAX,
 };
 

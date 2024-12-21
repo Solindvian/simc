@@ -8711,6 +8711,11 @@ void actions::rogue_action_t<Base>::trigger_shadow_techniques( const action_stat
     double energy_gain = p()->spec.shadow_techniques_energize->effectN( 2 ).base_value() +
                          p()->talent.subtlety.improved_shadow_techniques->effectN( 1 ).base_value();
     p()->resource_gain( RESOURCE_ENERGY, energy_gain, p()->gains.shadow_techniques, state->action );
+    // 2024-11-28 -- Shadowcraft's implementation appears to trigger the energize twice
+    if ( p()->bugs && p()->talent.subtlety.shadowcraft->ok() && p()->buffs.symbols_of_death->check() )
+    {
+      p()->resource_gain( RESOURCE_ENERGY, energy_gain, p()->gains.shadow_techniques, state->action );
+    }
     p()->buffs.shadow_techniques->trigger( 1 + shadowcraft_adjustment ); // Combo Point storage
   }
 }
@@ -9263,7 +9268,11 @@ void actions::rogue_action_t<Base>::trigger_deathstalkers_mark( const action_sta
   if ( ab::base_costs[ RESOURCE_COMBO_POINT ] == 0 )
     return;
 
-  if ( p()->get_target_data( state->target )->debuffs.deathstalkers_mark->check() &&
+  // 2024-11-30 -- When Darkest Night is active, Deathstalker's Mark cannot be reduced below the application stacks
+  const bool darkest_night_bug = ( p()->bugs && p()->buffs.darkest_night->check() &&
+                                   ( p()->get_target_data( state->target )->debuffs.deathstalkers_mark->check() <=
+                                     p()->spell.darkest_night_buff->effectN( 3 ).base_value() ) );
+  if ( !darkest_night_bug && p()->get_target_data( state->target )->debuffs.deathstalkers_mark->check() &&
        cast_state( state )->get_combo_points() >= as<int>( p()->talent.deathstalker.deathstalkers_mark->effectN( 2 ).base_value() ) )
   {
     p()->get_target_data( state->target )->debuffs.deathstalkers_mark->decrement();

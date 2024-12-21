@@ -239,10 +239,11 @@ struct priest_pet_melee_t : public melee_attack_t
 struct priest_pet_spell_t : public parse_action_effects_t<spell_t>
 {
   bool affected_by_shadow_weaving;
+  bool affected_by_reveries;
   bool triggers_atonement;
 
   priest_pet_spell_t( util::string_view token, priest_pet_t& p, const spell_data_t* s )
-    : ab( token, &p, s ), affected_by_shadow_weaving( false ), triggers_atonement( false )
+    : ab( token, &p, s ), affected_by_shadow_weaving( false ), triggers_atonement( false ), affected_by_reveries( true )
   {
     may_crit = true;
 
@@ -378,7 +379,7 @@ struct priest_pet_spell_t : public parse_action_effects_t<spell_t>
       mul *= 1 + p().o().talents.discipline.atonement->effectN( 3 ).percent();
 
     if ( p().o().talents.discipline.abyssal_reverie.enabled() &&
-         ( dbc::get_school_mask( s->action->school ) & SCHOOL_SHADOW ) != SCHOOL_SHADOW )
+         ( dbc::get_school_mask( s->action->school ) & SCHOOL_SHADOW ) != SCHOOL_SHADOW && affected_by_reveries )
       mul *= 1 + p().o().talents.discipline.abyssal_reverie->effectN( 1 ).percent();
 
     if ( p().o().talents.voidweaver.voidheart.enabled() && p().o().buffs.voidheart->check() )
@@ -554,6 +555,7 @@ struct void_flay_t final : public priest_pet_spell_t
     trigger_gcd = 1.5_s;
 
     damage_mul = data().effectN( 2 ).percent();
+    affected_by_reveries = false;
   }
 
   void init() override

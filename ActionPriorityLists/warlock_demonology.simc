@@ -6,10 +6,7 @@
 # SimulationCraft is always looking for updates and improvements to the default action lists.
 
 # Executed before combat begins. Accepts non-harmful actions only.
-actions.precombat=flask
-actions.precombat+=/food
-actions.precombat+=/augmentation
-actions.precombat+=/summon_pet
+actions.precombat=summon_pet
 actions.precombat+=/snapshot_stats
 # Sets the expected Tyrant Setup on pull to take a total 12 seconds long
 actions.precombat+=/variable,name=first_tyrant_time,op=set,value=12

@@ -1,5 +1,5 @@
-// Item name descriptions, wow build 11.0.5.57534
-static const std::array<item_name_description_t, 931> __item_name_description_data { {
+// Item name descriptions, wow build 11.0.7.58187
+static const std::array<item_name_description_t, 939> __item_name_description_data { {
   {     2, "Now with extra description"                  },
   {    20, "Season 10"                                   },
   {   226, "Season 10 Elite"                             },
@@ -913,7 +913,10 @@ static const std::array<item_name_description_t, 931> __item_name_description_da
   { 14181, "Tier 6"                                      },
   { 14182, "Tier 7"                                      },
   { 14183, "Tier 8"                                      },
+  { 14185, "Singing Thunder Citrine"                     },
   { 14186, "Darkmoon Fortune Deck"                       },
+  { 14189, "Singing Sea Citrine"                         },
+  { 14190, "Singing Wind Citrine"                        },
   { 14195, "Dragonflight Season 1 Elite"                 },
   { 14196, "Dragonflight Season 2 Elite"                 },
   { 14197, "Dragonflight Season 3 Elite"                 },
@@ -931,5 +934,10 @@ static const std::array<item_name_description_t, 931> __item_name_description_da
   { 14212, "Timewalking Vendor - Green"                  },
   { 14213, "Dungeons - Green"                            },
   { 14214, "Rare Monsters"                               },
+  { 14220, "Snapdragon Treat"                            },
+  { 14222, "Timewalking Vendor - Black"                  },
+  { 14223, "Timewalking Vendor - Red"                    },
+  { 14224, "Timewalking Vendor - Dark"                   },
+  { 14225, "Timewalking Vendor - Orange"                 },
 } };
 

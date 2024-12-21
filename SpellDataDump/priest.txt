@@ -1,4 +1,4 @@
-SimulationCraft 1100-02 for World of Warcraft 11.0.5.57534 Live
+SimulationCraft 1100-02 for World of Warcraft 11.0.7.58187 Live
 Name             : Power Word: Shield (id=17) [Spell Family (6)] 
 Class            : Priest
 School           : Holy
@@ -321,7 +321,7 @@ Family Flags     : 10, 126
 Attributes       : Not Shapeshifted (16), Allow While Not Shapeshifted (caster form) (83), Aura Points On Client (268), Heal Prediction (280), Allow Class Ability Procs (416)
 Effects          :
 #1 (id=611)      : Direct Heal (10)
-                   Base Value: 0 | Scaled Value: 0 (delta=0.05) | Value Multiplier: 1 | SP Coefficient: 12.7674 | PvP Coefficient: 1.4 | Target: Friendly (21)
+                   Base Value: 0 | Scaled Value: 0 (delta=0.05) | Value Multiplier: 1 | SP Coefficient: 15.9593 | PvP Coefficient: 1.4 | Target: Friendly (21)
 #2 (id=709474)   : Dummy (3)
                    Base Value: 6 | Scaled Value: 6
 Description      : Perform a miracle, healing an ally for $s1.$?s63733[
@@ -349,7 +349,7 @@ Family Flags     : 12, 126
 Attributes       : Not Shapeshifted (16), Allow While Not Shapeshifted (caster form) (83), Aura Points On Client (268), Heal Prediction (280), Allow Class Ability Procs (416)
 Effects          :
 #1 (id=612)      : Direct Heal (10)
-                   Base Value: 0 | Scaled Value: 0 (delta=0.05) | Value Multiplier: 1 | SP Coefficient: 8.68626 | Target: Friendly (21)
+                   Base Value: 0 | Scaled Value: 0 (delta=0.05) | Value Multiplier: 1 | SP Coefficient: 8.68626 | PvP Coefficient: 1.1 | Target: Friendly (21)
 Description      : An efficient spell that heals an ally for $s1.
 
 Name             : Flash Heal (id=2061) [Spell Family (6)] 
@@ -577,9 +577,11 @@ Family Flags     : 20, 72
 Attributes       : Not Shapeshifted (16), DoT Stacking Rule (103), Spell Haste Affects Periodic (173), Periodic Can Crit (265), Aura Points On Client (268), Allow Class Ability Procs (416), Nameplate Personal Buffs/Debuffs (423), Periodic Refresh Extends Duration (436)
 Effects          :
 #1 (id=6990)     : School Damage (2): holy
-                   Base Value: 0 | Scaled Value: 0 (delta=0.05) | SP Coefficient: 2.97907 | Target: Enemy (6)
+                   Base Value: 0 | Scaled Value: 0 (delta=0.05) | SP Coefficient: 3.426 | Target: Enemy (6)
+Hotfixed         : SP Coefficient (2.97907 -> 3.426)
 #2 (id=6991)     : Apply Aura (6) | Periodic Damage (3): holy every 1 seconds
-                   Base Value: 0 | Scaled Value: 0 | SP Coefficient: 0.16385 | Target: Enemy (6)
+                   Base Value: 0 | Scaled Value: 0 | SP Coefficient: 0.1884 | Target: Enemy (6)
+Hotfixed         : SP Coefficient (0.16385 -> 0.1884)
 #3 (id=808675)   : Apply Aura (6) | Unknown(395)
                    Base Value: 0 | Scaled Value: 0 | Misc Value: 19526 | Target: Enemy (6)
 #4 (id=1167235)  : Apply Aura (6) | Modify Damage Done% to Caster (269)
@@ -840,7 +842,7 @@ School           : Holy
 Spell Type       : Magic
 Range            : 40 yards
 Duration         : 5 seconds
-Cooldown         : 180 seconds
+Cooldown         : 120 seconds
 Labels           : 1224
 Stance Mask      : 0x89000000
 Family Flags     : 95
@@ -1109,7 +1111,7 @@ Family Flags     : 28, 126
 Attributes       : Not Shapeshifted (16), Allow While Not Shapeshifted (caster form) (83), DoT Stacking Rule (103), Allow Class Ability Procs (416)
 Effects          :
 #1 (id=24949)    : Direct Heal (10)
-                   Base Value: 0 | Scaled Value: 0 (delta=0.05) | SP Coefficient: 3.5793 | PvP Coefficient: 1.4 | Radius: 10 yards | Target: At Friendly in Area (31)
+                   Base Value: 0 | Scaled Value: 0 (delta=0.05) | SP Coefficient: 4.47412 | PvP Coefficient: 1.4 | Radius: 10 yards | Target: At Friendly in Area (31)
 #2 (id=288932)   : Dummy (3)
                    Base Value: 5 | Scaled Value: 5
 #3 (id=709475)   : Dummy (3)
@@ -1546,7 +1548,7 @@ School           : Holy
 Spell Type       : Magic
 Range            : 40 yards
 Duration         : 5 seconds
-Cooldown         : 180 seconds
+Cooldown         : 120 seconds
 Labels           : 1224
 Stance Mask      : 0x89000000
 Family Flags     : 95
@@ -1566,7 +1568,7 @@ School           : Holy
 Spell Type       : Magic
 Range            : 40 yards
 Duration         : 5 seconds
-Cooldown         : 180 seconds
+Cooldown         : 120 seconds
 Labels           : 1224
 Stance Mask      : 0x89000000
 Family Flags     : 95
@@ -1586,7 +1588,7 @@ School           : Holy
 Spell Type       : Magic
 Range            : 40 yards
 Duration         : 5 seconds
-Cooldown         : 180 seconds
+Cooldown         : 120 seconds
 Labels           : 1224
 Stance Mask      : 0x89000000
 Attributes       : Not Shapeshifted (16), Allow While Not Shapeshifted (caster form) (83), DoT Stacking Rule (103), Ignore Caster Modifiers (125), Spell Haste Affects Periodic (173), Periodic Can Crit (265), Aura Points On Client (268), Heal Prediction (280), Reset cooldown upon ending an encounter (333)
@@ -1605,7 +1607,7 @@ School           : Holy
 Spell Type       : Magic
 Range            : 40 yards
 Duration         : 5 seconds
-Cooldown         : 180 seconds
+Cooldown         : 120 seconds
 Labels           : 1224
 Stance Mask      : 0x89000000
 Family Flags     : 95
@@ -1625,7 +1627,7 @@ School           : Holy
 Spell Type       : Magic
 Range            : 40 yards
 Duration         : 5 seconds
-Cooldown         : 180 seconds
+Cooldown         : 120 seconds
 Labels           : 1224
 Stance Mask      : 0x89000000
 Affecting Spells : Mastery: Deep Healing (77226 effect#1)
@@ -1646,7 +1648,7 @@ School           : Holy
 Spell Type       : Magic
 Range            : 40 yards
 Duration         : 5 seconds
-Cooldown         : 180 seconds
+Cooldown         : 120 seconds
 Labels           : 1224
 Stance Mask      : 0x89000000
 Affecting Spells : Norgannon's Foresight (236380 effect#1)
@@ -1902,11 +1904,11 @@ Race             : Worgen (0x200000)
 School           : Physical
 Spell Type       : None
 Duration         : 10 seconds
-Cooldown         : 120 seconds
+Cooldown         : 90 seconds
 Labels           : 219
 Attributes       : Allow While Stealthed (37), Reset cooldown upon ending an encounter (333)
 Effects          :
-#1 (id=71777)    : Apply Aura (6) | Increase Speed% (31)
+#1 (id=71777)    : Apply Aura (6) | Increase Movement Speed% (Stacking) (129)
                    Base Value: 40 | Scaled Value: 40 | Target: Self (1)
 #2 (id=104308)   : Apply Aura (6) | Unknown(358)
                    Base Value: 0 | Scaled Value: 0 | Target: Self (1)
@@ -2710,7 +2712,7 @@ School           : Holy
 Spell Type       : Magic
 Range            : 40 yards
 Duration         : 5 seconds
-Cooldown         : 180 seconds
+Cooldown         : 120 seconds
 Labels           : 1224
 Stance Mask      : 0x89000000
 Attributes       : Not Shapeshifted (16), Allow While Not Shapeshifted (caster form) (83), DoT Stacking Rule (103), Ignore Caster Modifiers (125), Spell Haste Affects Periodic (173), Periodic Can Crit (265), Aura Points On Client (268), Heal Prediction (280), Reset cooldown upon ending an encounter (333)
@@ -3132,13 +3134,14 @@ Effects          :
                    Affected Spells: Prayer of Mending (33110)
                    Family Flags: 117
 #16 (id=1040388) : Apply Aura (6) | Add Percent Modifier (108): Spell Direct Amount (0)
-                   Base Value: 0 | Scaled Value: 0 | PvP Coefficient: 0 | Target: Self (1)
+                   Base Value: -9 | Scaled Value: -9 | PvP Coefficient: 0 | Target: Self (1)
                    Affected Spells: Flash Heal (2061)
                    Family Flags: 11
 #17 (id=1074585) : Apply Aura (6) | Add Percent Modifier (108): Spell Direct Amount (0)
-                   Base Value: 61 | Scaled Value: 61 | Target: Self (1)
+                   Base Value: 103 | Scaled Value: 103 | Target: Self (1)
                    Affected Spells: Flash Heal (2061)
                    Family Flags: 11
+Hotfixed         : Base Value (77 -> 103)
 #18 (id=1079592) : Apply Aura (6) | Add Percent Modifier (108): Spell Direct Amount (0)
                    Base Value: 192 | Scaled Value: 192 | Target: Self (1)
                    Affected Spells: Smite (585), Smite (425529), Void Blast (450215)
@@ -3148,7 +3151,7 @@ Effects          :
 #20 (id=1081585) : Apply Aura (6) | Apply Flat Modifier w/ Label (219): Spell Effect 2 (12)
                    Base Value: 5 | Scaled Value: 5 | Misc Value: 12 | Misc Value 2: 2672 (Label) | Target: Self (1)
 #21 (id=1084907) : Apply Aura (6) | Add Percent Modifier (108): Spell Direct Amount (0)
-                   Base Value: 23 | Scaled Value: 23 | Target: Self (1)
+                   Base Value: 35 | Scaled Value: 35 | Target: Self (1)
                    Affected Spells: Power Word: Life (373481)
                    Family Flags: 79
 #22 (id=1093858) : Apply Aura (6) | Modify Cooldown Time (Category) (341)
@@ -3181,6 +3184,10 @@ Effects          :
 #30 (id=1176319) : Apply Aura (6) | Apply Flat Modifier w/ Label (219): Spell Effect 2 (12)
                    Base Value: 3000 | Scaled Value: 3000 | Misc Value: 12 | Misc Value 2: 3985 (Label) | Target: Self (1)
                    Affected Spells (Label): Preemptive Care (440671)
+#31 (id=1202480) : Apply Aura (6) | Add Percent Modifier (108): Spell Direct Amount (0)
+                   Base Value: -9 | Scaled Value: -9 | PvP Coefficient: 0 | Target: Self (1)
+                   Affected Spells: Power Word: Life (373481)
+                   Family Flags: 79
 Description      : Holy Priest core passive
 
 Name             : Discipline Priest (id=137032) [Spell Family (6), Passive, Hidden] 
@@ -5671,11 +5678,13 @@ Labels           : 1224
 Attributes       : Missile Speed is Delay (in sec) (292), Reset cooldown upon ending an encounter (333)
 Effects          :
 #1 (id=477694)   : Trigger Missiles (32)
-                   Base Value: 0 | Scaled Value: 0 | Trigger Spell: 256893 | Radius: 0 - 5 yards | Target: Enemy (6)
-Description      : Call down a strike of Holy energy, dealing $<damage> Holy damage to enemies within $A1 yards after 3 sec.
-Variables        : $damage=${$cond($gt($SP,$AP),$SP*3,$AP*3)*$pctD*(1+$@versadmg)}
+                   Base Value: 3 | Scaled Value: 3 | Trigger Spell: 256893 | Radius: 0 - 10 yards | Target: Enemy (6)
+#2 (id=1192214)  : Dummy (3)
+                   Base Value: 8 | Scaled Value: 8
+Description      : Call down a strike of Holy energy, dealing $<damage> Holy damage to enemies within $A1 yards after $s1 sec. Damage reduced beyond $s2 targets.
+Variables        : $damage=${$cond($gt($SP,$AP),$SP*4.2,$AP*4.2)*$pctD*(1+$@versadmg)}
 
-Name             : Holy Resistance (desc=Racial Passive) (id=255651) [Passive] 
+Name             : Holy Providence (desc=Racial Passive) (id=255651) [Passive] 
 Class            : Warrior, Paladin, Hunter, Rogue, Priest, Death Knight, Shaman, Mage, Warlock, Monk, Druid, Demon Hunter, Evoker
 Race             : Lightforged Draenei (0x20000000)
 School           : Holy
@@ -5685,7 +5694,10 @@ Effects          :
 #1 (id=477698)   : Apply Aura (6) | Modify Damage Taken% (87)
                    Base Value: -1 | Scaled Value: -1 | Misc Value: 0x2 | Target: Self (1)
                    Affected School(s): Holy
-Description      : Reduces Holy damage taken by ${$s1/-1}%.
+#2 (id=1192226)  : Apply Aura (6) | Modify Healing% Done (136)
+                   Base Value: 1 | Scaled Value: 1 | Misc Value: 0x7f | Target: Self (1)
+                   Affected School(s): All
+Description      : Reduces Holy damage taken by ${$s1/-1}% and increases healing done by $s2%.
 
 Name             : Light's Reckoning (desc=Racial Passive) (id=255652) [Passive] 
 Class            : Warrior, Paladin, Hunter, Rogue, Priest, Death Knight, Shaman, Mage, Warlock, Monk, Druid, Demon Hunter, Evoker
@@ -5720,9 +5732,9 @@ Cooldown         : 150 seconds
 Triggered By     : Light's Judgment (255647)
 Effects          :
 #1 (id=479673)   : School Damage (2): holy
-                   Base Value: 0 | Scaled Value: 0 | PvP Coefficient: 0.5 | Radius: 0 - 5 yards | Target: At Enemy (53) -> At Enemy in Area (16)
+                   Base Value: 0 | Scaled Value: 0 | PvP Coefficient: 0.5 | Radius: 0 - 10 yards | Target: At Enemy (53) -> At Enemy in Area (16)
 Description      : Call down a strike of Holy energy, dealing $<damage> Holy damage to enemies within $A1 yards.
-Variables        : $damage=${$cond($gt($SP,$AP),$SP*3,$AP*3)*$pctD*(1+$@versadmg)}
+Variables        : $damage=${$cond($gt($SP,$AP),$SP*4.2,$AP*4.2)*$pctD*(1+$@versadmg)}
 
 Name             : Light's Reckoning (desc=Racial Passive) (id=256896) 
 Class            : Warrior, Paladin, Hunter, Rogue, Priest, Death Knight, Shaman, Mage, Warlock, Monk, Druid, Demon Hunter, Evoker
@@ -8560,7 +8572,7 @@ School           : Holy
 Spell Type       : Magic
 Range            : 40 yards
 Duration         : 5 seconds
-Cooldown         : 180 seconds
+Cooldown         : 120 seconds
 Labels           : 1224
 Stance Mask      : 0x89000000
 Attributes       : Not Shapeshifted (16), Allow While Not Shapeshifted (caster form) (83), DoT Stacking Rule (103), Ignore Caster Modifiers (125), Spell Haste Affects Periodic (173), Periodic Can Crit (265), Aura Points On Client (268), Heal Prediction (280), Reset cooldown upon ending an encounter (333)
@@ -8581,6 +8593,7 @@ Duration         : Aura (infinite)
 Labels           : 16: Class Spells
                  : 292
 Attributes       : Allow Cast While Dead (23), No Aura Cancel (31), Can't Crit (93), Suppress Caster Procs (112), Suppress Target Procs (113), Allow Aura While Dead (116), Suppress Weapon Procs (151), Ignore Healing Modifiers (219), Disable Aura While Dead (226), Do Not Log Full Overheal (323), Always Allow Negative Healing Percent Modifiers (442)
+Aura Interrupt   : Leave World (19)
 Effects          :
 #1 (id=996412)   : Unknown(271) | Periodic Heal% (20): every 2 seconds
                    Base Value: 2 | Scaled Value: 2 | Radius: 40 yards | Target: Self (1)
@@ -9866,7 +9879,7 @@ Labels           : 16: Class Spells
                  : 292
 Proc Chance      : 100%
 Stance Mask      : 0x80000000
-Affecting Spells : Renew (139 effect#2), Holy Priest (137031 effects: #1, #2, #21, #25, #26), Discipline Priest (137032 effects: #1, #2), Apotheosis (200183 effects: #3, #4), Dejahna's Inspiration (281456 effects: #1, #2), Kam Xi'raff (281457 effect#1), Lunar Purity (282786 effects: #2, #3), Twist of Fate (390978 effects: #1, #2), Light Weaving (394609 effect#1), Benevolence (415416 effects: #1, #2), Initial Priest (417191 effects: #3, #4), Premonition of Piety (428930 effects: #1, #2), Miraculous Recovery (440674 effect#1), Resonant Energy (453846 effect#1), Perfected Form (453983 effects: #1, #2)
+Affecting Spells : Renew (139 effect#2), Holy Priest (137031 effects: #1, #2, #21, #25, #26, #31), Discipline Priest (137032 effects: #1, #2), Apotheosis (200183 effects: #3, #4), Dejahna's Inspiration (281456 effects: #1, #2), Kam Xi'raff (281457 effect#1), Lunar Purity (282786 effects: #2, #3), Twist of Fate (390978 effects: #1, #2), Light Weaving (394609 effect#1), Benevolence (415416 effects: #1, #2), Initial Priest (417191 effects: #3, #4), Premonition of Piety (428930 effects: #1, #2), Miraculous Recovery (440674 effect#1), Resonant Energy (453846 effect#1), Perfected Form (453983 effects: #1, #2)
 Family Flags     : 79, 126
 Attributes       : Not Shapeshifted (16), Do Not Sheath (18), Allow While Not Shapeshifted (caster form) (83), Vehicle Immunity Category (218), Allow Class Ability Procs (416)
 Effects          :
@@ -9941,13 +9954,13 @@ Effects          :
 #1 (id=1002578)  : School Damage (2): shadow
                    Base Value: 0 | Scaled Value: 0 (delta=0.05) | SP Coefficient: 3 | Target: Enemy (6)
 #2 (id=1002579)  : Apply Aura (6) | Dummy (4)
-                   Base Value: 750 | Scaled Value: 750 | Target: Enemy (6)
+                   Base Value: 1050 | Scaled Value: 1050 | Target: Enemy (6)
 #3 (id=1002580)  : Apply Aura (6) | Dummy (4)
                    Base Value: 100 | Scaled Value: 100 | Target: Enemy (6)
 #4 (id=1002581)  : Trigger Spell (64): Mindgames
                    Base Value: 0 | Scaled Value: 0 | Trigger Spell: 375902 | Target: Self (1)
 #5 (id=1002582)  : Apply Aura (6) | Dummy (4)
-                   Base Value: 750 | Scaled Value: 750 | Target: Enemy (6)
+                   Base Value: 1050 | Scaled Value: 1050 | Target: Enemy (6)
 #6 (id=1002583)  : Apply Aura (6) | Dummy (4)
                    Base Value: 450 | Scaled Value: 450 | Target: Any Target (25)
 #7 (id=1002584)  : Trigger Spell (64): Mindgames
@@ -12824,7 +12837,7 @@ School           : Holy
 Spell Type       : Magic
 Range            : 40 yards
 Duration         : 5 seconds
-Cooldown         : 180 seconds
+Cooldown         : 120 seconds
 Labels           : 1224
 Stance Mask      : 0x89000000
 Affecting Spells : Norgannon's Foresight (236380 effect#1)
@@ -13484,7 +13497,7 @@ Labels           : 16: Class Spells
 Proc Chance      : 100%
 Proc Flags       : Yellow Melee, Yellow Ranged, Generic Heal, Generic Hostile Spell, Magic Heal, Magic Hostile Spell
 Triggered By     : Blessing of the Forge (434132)
-Attributes       : Do Not Display (Spellbook, Aura Icon, Combat Log) (7), No Immunities (29), Allow Cast While Casting (135), Allow Actions During Channel (160), Allow While Stunned (163), Allow While Confused (178), Allow While Charmed (261), Allow While Banished Aura State (299), Allow Class Ability Procs (416)
+Attributes       : Do Not Display (Spellbook, Aura Icon, Combat Log) (7), No Immunities (29), Can Proc From Procs (122), Allow Cast While Casting (135), Allow Actions During Channel (160), Allow While Stunned (163), Allow While Confused (178), Allow While Charmed (261), Allow While Banished Aura State (299), Allow Class Ability Procs (416)
 Effects          :
 #1 (id=1124157)  : Apply Aura (6) | Dummy (4)
                    Base Value: 1 | Scaled Value: 1 | Target: Self (1)
@@ -14010,9 +14023,10 @@ Effects          :
                    Affected Spells: Shadow Word: Pain (589), Vampiric Touch (34914)
                    Family Flags: 15, 42
 #2 (id=1151713)  : Apply Aura (6) | Add Percent Modifier (108): Spell Power (24)
-                   Base Value: 20 | Scaled Value: 20 | Misc Value: 24 | Target: Self (1)
+                   Base Value: 20 | Scaled Value: 20 | PvP Coefficient: 2 | Misc Value: 24 | Target: Self (1)
                    Affected Spells: Power Word: Shield (17)
                    Family Flags: 0
+Hotfixed         : PvP Coefficient (1 -> 2)
 #3 (id=1158795)  : Apply Aura (6) | Add Percent Modifier (108): Spell Direct Amount (0)
                    Base Value: 25 | Scaled Value: 25 | Target: Self (1)
                    Affected Spells: Shadow Word: Pain (589), Vampiric Touch (34914)
@@ -14508,7 +14522,7 @@ Class            : Priest
 School           : Shadow
 Spell Type       : Magic
 Spell Level      : 1
-Range            : 30 yards
+Range            : 45 yards
 Cast Time        : 1.5 seconds
 Labels           : 16: Class Spells
                  : 18: Priest Spells

@@ -8,11 +8,8 @@
 # Restoration DPS APL can be found at https://www.dreamgrove.gg/sims/tree/restoration.txt
 
 # Executed before combat begins. Accepts non-harmful actions only.
-actions.precombat=flask
-actions.precombat+=/food
-actions.precombat+=/augmentation
 # Snapshot raid buffed stats before combat begins and pre-potting is done.
-actions.precombat+=/snapshot_stats
+actions.precombat=snapshot_stats
 
 # Executed every time the actor is available.
 # Snapshot raid buffed stats before combat begins and pre-potting is done.

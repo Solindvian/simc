@@ -104,7 +104,7 @@ save=TWW1_Hunter_Marksmanship_Dark_Ranger.simc
 
 hunter="TWW1_Hunter_Survival_Sentinel"
 level=80
-race=orc
+race=maghar_orc
 spec=survival
 role=attack
 position=back
@@ -131,7 +131,7 @@ save=TWW1_Hunter_Survival_Sentinel.simc
 
 hunter="TWW1_Hunter_Survival_Pack_Leader"
 level=80
-race=orc
+race=maghar_orc
 spec=survival
 role=attack
 position=back

@@ -1,4 +1,4 @@
-// Player trait definitions, wow build 11.0.5.57534
+// Player trait definitions, wow build 11.0.7.58187
 static const std::array<trait_data_t, 3204> __trait_data_data { {
   { 1,  1, 112108,  90258, 2, 20, 117113,  384124,      0,      0,  8,  5,  -1,                   "Armored to the Teeth", {   72,    0,    0,    0 }, {    0,    0,    0,    0 },  0, 0 },
   { 1,  1, 112109,  90259, 2, 20, 117114,  394855,      0,      0,  8,  5,  -1,                   "Armored to the Teeth", {   73,    0,    0,    0 }, {    0,    0,    0,    0 },  0, 0 },
@@ -1753,7 +1753,7 @@ static const std::array<trait_data_t, 3204> __trait_data_data { {
   { 2,  8, 124750, 100989, 1,  0, 129588,  108853, 319836,      0,  2,  1,  -1,                             "Fire Blast", {   63,    0,    0,    0 }, {    0,    0,    0,    0 },  0, 0 },
   { 2,  8, 124752, 100991, 1,  0, 129590,  343222,      0,      0,  3,  3,  -1,                   "Call of the Sun King", {   63,    0,    0,    0 }, {    0,    0,    0,    0 },  0, 0 },
   { 2,  8, 124753, 100992, 1,  8, 129591,  416715,      0,      0,  6,  7,  -1,                             "Convection", {   63,    0,    0,    0 }, {    0,    0,    0,    0 },  0, 0 },
-  { 2,  8, 124754, 100993, 1, 20, 129592,  451757,      0,      0,  9,  7,  -1,                              "Explosivo", {   63,    0,    0,    0 }, {    0,    0,    0,    0 },  0, 0 },
+  { 2,  8, 124754, 100993, 1, 20, 129592,  451757,      0,      0,  9,  7,  -1,                            "Cratermaker", {   63,    0,    0,    0 }, {    0,    0,    0,    0 },  0, 0 },
   { 2,  8, 124755, 100994, 1,  0, 129593,  450716,      0,      0,  4,  3,  -1,                               "Lit Fuse", {   63,    0,    0,    0 }, {    0,    0,    0,    0 },  0, 0 },
   { 2,  8, 124756, 100995, 1,  8, 129594,  190319,      0,      0,  6,  4,  -1,                             "Combustion", {   63,    0,    0,    0 }, {    0,    0,    0,    0 },  0, 0 },
   { 2,  8, 124757, 100996, 1, 20, 129595,  384033,      0,      0,  9,  6,  -1,                               "Firefall", {   63,    0,    0,    0 }, {    0,    0,    0,    0 },  0, 0 },
@@ -3206,7 +3206,7 @@ static const std::array<trait_data_t, 3204> __trait_data_data { {
   { 4, 13, 123336,  99827, 1,  0,      0,       0,      0,      0,  1,  1,  -1,                                      "0", {    0, 1467,    0,    0 }, {    0,    0,    0,    0 }, 37, 3 },
 } };
 
-// Player trait definition effect entries, wow build 11.0.5.57534
+// Player trait definition effect entries, wow build 11.0.7.58187
 static const std::array<trait_definition_effect_entry_t, 382> __trait_definition_effect_data { {
   { 85156, 0, 0, 60989 },
   { 85156, 1, 0, 60988 },
@@ -3996,7 +3996,7 @@ static const std::array<uint16_t, 3204> __trait_spell_id_index { {
    2330,  2329,   214,   215,
 } };
 
-// Hero trees, wow build 11.0.5.57534
+// Hero trees, wow build 11.0.7.58187
 static const std::array<std::pair<unsigned, std::string>, 39> __trait_sub_tree_data { {
   { 18, "Voidweaver" },
   { 19, "Archon" },

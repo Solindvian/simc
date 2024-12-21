@@ -26,8 +26,10 @@ TWW1_Hunter_Survival_Sentinel.simc
 
 TWW1_Mage_Arcane.simc
 TWW1_Mage_Arcane_Sunfury.simc
+TWW1_Mage_Fire_Sunfury.simc
 TWW1_Mage_Fire.simc
 TWW1_Mage_Frost.simc
+TWW1_Mage_Frost_Frostfire.simc
 
 TWW1_Monk_Brewmaster.simc
 TWW1_Monk_Windwalker.simc
@@ -48,6 +50,7 @@ TWW1_Rogue_Outlaw_HO.simc
 TWW1_Rogue_Subtlety.simc
 
 TWW1_Shaman_Elemental.simc
+TWW1_Shaman_Elemental_Farseer.simc
 TWW1_Shaman_Enhancement.simc
 TWW1_Shaman_Enhancement_Totemic.simc
 

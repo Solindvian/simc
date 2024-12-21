@@ -653,12 +653,15 @@ protected:
     // ultimate_penitence_damage_t
     propagate_const<ultimate_penitence_damage_t*> damage;
 
-    ultimate_penitence_channel_t( priest_t& p )
+    ultimate_penitence_channel_t( priest_t& p, stats_t* parent_stats )
       : priest_spell_t( "ultimate_penitence_channel", p, p.find_spell( 421434 ) )
     {
       damage    = new ultimate_penitence_damage_t( p );
+      dual      = true;
       channeled = true;
       tick_zero = true;
+      stats     = parent_stats;
+      stats->action_list.push_back( this );
     }
 
     void tick( dot_t* d ) override
@@ -689,7 +692,8 @@ public:
     // Channel = 421434
     // Damage bolt = 421543
 
-    channel = new ultimate_penitence_channel_t( p );
+    channel        = new ultimate_penitence_channel_t( p, stats );
+    add_child( channel->damage );
   }
 
   void execute() override
